@@ -1,0 +1,6 @@
+packages:
+  - apps/miniapp
+  - packages/contracts
+
+allowBuilds:
+  esbuild: true

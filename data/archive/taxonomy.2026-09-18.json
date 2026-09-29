@@ -1,0 +1,1179 @@
+{
+  "status": "runtime_seed",
+  "version": "2026-09-18.1",
+  "purpose": "Редакционный образовательный каталог: пять широких областей, L2, L3 и выборочные L4. Уточнения не обязательны.",
+  "topics": [
+    {
+      "id": "science",
+      "parent_id": null,
+      "level": 1,
+      "label": "Науки и учебные дисциплины",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.math",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Математика",
+      "aliases": [
+        "математика",
+        "алгебра"
+      ],
+      "active": true
+    },
+    {
+      "id": "science.math.percentages",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Проценты",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.physics",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Физика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.physics.optics",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Оптика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.biology",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Биология",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.biology.cells",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Клетки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages",
+      "parent_id": null,
+      "level": 1,
+      "label": "Языки и гуманитарные навыки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Английский язык",
+      "aliases": [
+        "английский",
+        "English"
+      ],
+      "active": true
+    },
+    {
+      "id": "languages.english.tenses",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Времена глагола",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.russian",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Русский язык",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.russian.punctuation",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Пунктуация",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.writing",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Работа с текстом",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.writing.structure",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Структура объяснения",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital",
+      "parent_id": null,
+      "level": 1,
+      "label": "Цифровые инструменты и технологии",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.spreadsheets",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Электронные таблицы",
+      "aliases": [
+        "таблицы",
+        "Excel",
+        "Google Sheets"
+      ],
+      "active": true
+    },
+    {
+      "id": "digital.spreadsheets.pivot_tables",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Сводные таблицы",
+      "aliases": [
+        "сводная",
+        "pivot"
+      ],
+      "active": true
+    },
+    {
+      "id": "digital.web",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Веб-технологии",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.web.html",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Основы HTML",
+      "aliases": [
+        "разметка",
+        "HTML"
+      ],
+      "active": true
+    },
+    {
+      "id": "digital.python",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Python",
+      "aliases": [
+        "питон",
+        "Python"
+      ],
+      "active": true
+    },
+    {
+      "id": "digital.python.collections",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Коллекции данных",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical",
+      "parent_id": null,
+      "level": 1,
+      "label": "Практические навыки и механизмы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.mechanisms",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Механизмы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.mechanisms.gear_ratio",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Передаточное отношение",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.sewing",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Шитьё",
+      "aliases": [
+        "шитье"
+      ],
+      "active": true
+    },
+    {
+      "id": "practical.sewing.stitches",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Основные швы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.photography",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Фотография",
+      "aliases": [
+        "фото",
+        "фотография"
+      ],
+      "active": true
+    },
+    {
+      "id": "practical.photography.exposure",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Экспозиция",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways",
+      "parent_id": null,
+      "level": 1,
+      "label": "Образовательные и профессиональные траектории",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.admissions",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Поступление",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.application",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "Порядок поступления",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Исследовательская работа",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.question",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Постановка вопроса",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.career",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Освоение профессии",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.career.learning_plan",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "План обучения",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.math.equations",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Уравнения",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.math.geometry",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Геометрия",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.physics.mechanics",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Механика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.physics.electricity",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Электрические явления",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.biology.genetics",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Основы генетики",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.biology.ecology",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Экология",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.chemistry",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Химия",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.chemistry.reactions",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Химические реакции",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.chemistry.solutions",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Растворы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.chemistry.periodic_table",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Периодическая система",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.history",
+      "parent_id": "science",
+      "level": 2,
+      "label": "История",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.history.sources",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Работа с историческими источниками",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.history.chronology",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Хронология",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "science.history.causes",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Причины и последствия событий",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english.listening",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Понимание на слух",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english.conversation",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Разговорная практика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.russian.spelling",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Орфография",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.russian.text_analysis",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Анализ текста",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.writing.argumentation",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Аргументация",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.writing.editing",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Редактирование текста",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.german",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Немецкий язык",
+      "aliases": [
+        "немецкий",
+        "Deutsch"
+      ],
+      "active": true
+    },
+    {
+      "id": "languages.german.grammar",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Основы грамматики",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.german.pronunciation",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Произношение",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.german.conversation",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Разговорная практика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.public_speaking",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Публичные выступления",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.public_speaking.structure",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Структура выступления",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.public_speaking.slides",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Наглядные материалы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.public_speaking.questions",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Ответы на вопросы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.spreadsheets.formulas",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Формулы и ссылки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.spreadsheets.charts",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Диаграммы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.web.css",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Оформление страниц",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.web.http",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Как работает HTTP",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.python.functions",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Функции",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.python.files",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Работа с файлами",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.data_analysis",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Анализ данных",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.data_analysis.cleaning",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Очистка данных",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.data_analysis.statistics",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Описательная статистика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.data_analysis.visualization",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Визуализация данных",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.cyber_hygiene",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Цифровая грамотность и безопасность",
+      "aliases": [
+        "кибергигиена"
+      ],
+      "active": true
+    },
+    {
+      "id": "digital.cyber_hygiene.passwords",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Пароли и вход в аккаунт",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.cyber_hygiene.phishing",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Распознавание обмана",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.cyber_hygiene.backups",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Резервные копии",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.mechanisms.levers",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Рычаги",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.mechanisms.bearings",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Подшипники и трение",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.sewing.patterns",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Понимание выкройки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.sewing.fabrics",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Свойства тканей",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.photography.composition",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Композиция",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.photography.light",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Работа со светом",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.electronics",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Основы электроники",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.electronics.circuits",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Чтение простых схем",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.electronics.measurement",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Измерение величин",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.electronics.components",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Назначение компонентов",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.cooking",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Наука приготовления пищи",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.cooking.heat_transfer",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Теплообмен",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.cooking.proportions",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Пропорции и пересчёт рецепта",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "practical.cooking.fermentation",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Принципы брожения",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.program_choice",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "Выбор программы",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.preparation_plan",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "План подготовки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.sources",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Поиск научных источников",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.experiment",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Планирование исследования",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.career.skills_map",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "Карта навыков",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.career.portfolio",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "Учебное портфолио",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.internships",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Стажировки и первая практика",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.internships.search",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Поиск возможностей",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.internships.cv",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Описание опыта в резюме",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.internships.interview",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Подготовка к собеседованию",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.projects",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Учебные проекты и соревнования",
+      "aliases": [
+        "хакатон",
+        "олимпиадный проект"
+      ],
+      "active": true
+    },
+    {
+      "id": "pathways.projects.team",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "Командные роли",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.projects.planning",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "План проекта",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.projects.presentation",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "Защита результата",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english.tenses.present_perfect",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Present Perfect",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english.tenses.past_simple",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Past Simple",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "languages.english.tenses.present_simple",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Present Simple",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.python.collections.lists",
+      "parent_id": "digital.python.collections",
+      "level": 4,
+      "label": "Списки",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "digital.python.collections.dictionaries",
+      "parent_id": "digital.python.collections",
+      "level": 4,
+      "label": "Словари",
+      "aliases": [
+        "dict",
+        "dictionary"
+      ],
+      "active": true
+    },
+    {
+      "id": "practical.mechanisms.gear_ratio.gear_pairs",
+      "parent_id": "practical.mechanisms.gear_ratio",
+      "level": 4,
+      "label": "Расчёт зубчатой пары",
+      "aliases": [],
+      "active": true
+    }
+  ],
+  "facets": [
+    {
+      "id": "learner_level",
+      "label": "Уровень обучающегося",
+      "applicable_topic_prefixes": [
+        "*"
+      ],
+      "values": [
+        {
+          "id": "beginner",
+          "label": "Начинающий"
+        },
+        {
+          "id": "basics",
+          "label": "Освоил основы"
+        },
+        {
+          "id": "intermediate",
+          "label": "Средний уровень"
+        },
+        {
+          "id": "advanced",
+          "label": "Углублённый уровень"
+        }
+      ]
+    },
+    {
+      "id": "response_language",
+      "label": "Язык объяснения",
+      "applicable_topic_prefixes": [
+        "*"
+      ],
+      "values": [
+        {
+          "id": "ru",
+          "label": "Русский"
+        },
+        {
+          "id": "en",
+          "label": "Английский"
+        },
+        {
+          "id": "de",
+          "label": "Немецкий"
+        }
+      ]
+    },
+    {
+      "id": "tool",
+      "label": "Инструмент",
+      "applicable_topic_prefixes": [
+        "digital.spreadsheets"
+      ],
+      "values": [
+        {
+          "id": "excel",
+          "label": "Excel"
+        },
+        {
+          "id": "google_sheets",
+          "label": "Google Sheets"
+        },
+        {
+          "id": "libreoffice_calc",
+          "label": "LibreOffice Calc"
+        }
+      ]
+    },
+    {
+      "id": "tool_version",
+      "label": "Вариант инструмента",
+      "applicable_topic_prefixes": [
+        "digital.spreadsheets"
+      ],
+      "values": [
+        {
+          "id": "microsoft_365",
+          "label": "Microsoft 365"
+        },
+        {
+          "id": "other",
+          "label": "Другой вариант"
+        }
+      ]
+    },
+    {
+      "id": "mechanism_type",
+      "label": "Контекст механизма",
+      "applicable_topic_prefixes": [
+        "practical.mechanisms"
+      ],
+      "values": [
+        {
+          "id": "bicycle",
+          "label": "Велосипед"
+        },
+        {
+          "id": "educational_model",
+          "label": "Учебная модель"
+        },
+        {
+          "id": "gear_drive",
+          "label": "Зубчатая передача"
+        }
+      ]
+    },
+    {
+      "id": "organization",
+      "label": "Организация",
+      "applicable_topic_prefixes": [
+        "pathways.admissions"
+      ],
+      "values": [
+        {
+          "id": "itmo",
+          "label": "ИТМО"
+        },
+        {
+          "id": "mephi",
+          "label": "НИЯУ МИФИ"
+        },
+        {
+          "id": "bmstu",
+          "label": "МГТУ им. Н. Э. Баумана"
+        }
+      ]
+    },
+    {
+      "id": "admission_route",
+      "label": "Способ поступления",
+      "applicable_topic_prefixes": [
+        "pathways.admissions"
+      ],
+      "values": [
+        {
+          "id": "bvi",
+          "label": "БВИ"
+        },
+        {
+          "id": "general",
+          "label": "Общий конкурс"
+        }
+      ]
+    },
+    {
+      "id": "subject",
+      "label": "Дисциплина",
+      "applicable_topic_prefixes": [
+        "pathways.admissions"
+      ],
+      "values": [
+        {
+          "id": "informatics",
+          "label": "Информатика"
+        },
+        {
+          "id": "mathematics",
+          "label": "Математика"
+        }
+      ]
+    },
+    {
+      "id": "language_level",
+      "label": "Языковой уровень",
+      "applicable_topic_prefixes": [
+        "languages.english",
+        "languages.german"
+      ],
+      "values": [
+        {
+          "id": "a1",
+          "label": "A1"
+        },
+        {
+          "id": "a2",
+          "label": "A2"
+        },
+        {
+          "id": "b1",
+          "label": "B1"
+        },
+        {
+          "id": "b2",
+          "label": "B2"
+        },
+        {
+          "id": "c1",
+          "label": "C1"
+        }
+      ]
+    },
+    {
+      "id": "project_stage",
+      "label": "Этап проекта",
+      "applicable_topic_prefixes": [
+        "pathways.projects",
+        "pathways.research"
+      ],
+      "values": [
+        {
+          "id": "idea",
+          "label": "Замысел"
+        },
+        {
+          "id": "prototype",
+          "label": "Прототип"
+        },
+        {
+          "id": "presentation",
+          "label": "Защита результата"
+        }
+      ]
+    },
+    {
+      "id": "learning_context",
+      "label": "Формат освоения",
+      "applicable_topic_prefixes": [
+        "*"
+      ],
+      "values": [
+        {
+          "id": "school",
+          "label": "Школьная программа"
+        },
+        {
+          "id": "university",
+          "label": "Учебная программа вуза"
+        },
+        {
+          "id": "self_learning",
+          "label": "Самостоятельное изучение"
+        },
+        {
+          "id": "work",
+          "label": "Задача из практики"
+        }
+      ]
+    }
+  ],
+  "curated_equivalences": [],
+  "rules": {
+    "competency_minimum_level": 2,
+    "optional_deeper_levels": true,
+    "within_facet": "OR",
+    "between_required_facets": "AND",
+    "ancestor_does_not_claim_all_descendants": true,
+    "new_topics_require_review": true
+  },
+  "source": "Редакционный пример команды; не импортирован из внешнего API"
+}

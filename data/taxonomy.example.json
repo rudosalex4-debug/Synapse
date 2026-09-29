@@ -1,0 +1,3135 @@
+{
+  "status": "runtime_seed",
+  "version": "2026-09-25.1",
+  "purpose": "MVP: два направления L1 — образовательные траектории и карьера. L2 задаёт предмет ситуации, L3/L4 уточняют задачу; организация, специальность и этап задаются отдельными признаками. Другие ветви сохранены неактивными для истории.",
+  "topics": [
+    {
+      "id": "pathways",
+      "parent_id": null,
+      "level": 1,
+      "label": "Образовательные траектории",
+      "aliases": [
+        "образование",
+        "учеба",
+        "учёба",
+        "поступление"
+      ],
+      "active": true,
+      "description": "Выберите следующий шаг в учёбе вместе с теми, кто уже прошёл этот путь: от школы до исследования."
+    },
+    {
+      "id": "pathways.admissions",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Университеты",
+      "aliases": [],
+      "active": true,
+      "description": "Выбор вуза и программы, поступление и жизнь на выбранном направлении."
+    },
+    {
+      "id": "pathways.admissions.program_choice",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "Выбор специальности и программы",
+      "aliases": [],
+      "active": true,
+      "description": "Сравнить содержание программ и повседневную учёбу по опыту студентов."
+    },
+    {
+      "id": "pathways.admissions.preparation_plan",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "План подготовки к поступлению",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.application",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "label": "Порядок поступления",
+      "aliases": [],
+      "active": true,
+      "description": "Спросить об опыте подачи документов и отбора; актуальные правила проверяются на сайте вуза."
+    },
+    {
+      "id": "pathways.admissions.study",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "aliases": [],
+      "label": "Учёба на программе",
+      "active": true,
+      "description": "Нагрузка, предметы, практика и переход от курса к курсу."
+    },
+    {
+      "id": "pathways.admissions.transfer",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "aliases": [],
+      "label": "Перевод и смена программы",
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.campus",
+      "parent_id": "pathways.admissions",
+      "level": 3,
+      "aliases": [],
+      "label": "Адаптация и студенческая среда",
+      "active": true
+    },
+    {
+      "id": "pathways.schools",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Школы и лицеи",
+      "active": true,
+      "description": "Выбор образовательной среды, профиля и следующего этапа школьного обучения."
+    },
+    {
+      "id": "pathways.schools.choice",
+      "parent_id": "pathways.schools",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор школы или лицея",
+      "active": true
+    },
+    {
+      "id": "pathways.schools.profile",
+      "parent_id": "pathways.schools",
+      "level": 3,
+      "aliases": [],
+      "label": "Профиль и предметы",
+      "active": true
+    },
+    {
+      "id": "pathways.schools.admission",
+      "parent_id": "pathways.schools",
+      "level": 3,
+      "aliases": [],
+      "label": "Отбор и поступление",
+      "active": true
+    },
+    {
+      "id": "pathways.schools.adaptation",
+      "parent_id": "pathways.schools",
+      "level": 3,
+      "aliases": [],
+      "label": "Переход и адаптация",
+      "active": true
+    },
+    {
+      "id": "pathways.colleges",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Колледжи и СПО",
+      "active": true,
+      "description": "Получение профессионального образования и переход из колледжа в вуз или практику."
+    },
+    {
+      "id": "pathways.colleges.choice",
+      "parent_id": "pathways.colleges",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор колледжа и специальности",
+      "active": true
+    },
+    {
+      "id": "pathways.colleges.admission",
+      "parent_id": "pathways.colleges",
+      "level": 3,
+      "aliases": [],
+      "label": "Поступление после 9 или 11 класса",
+      "active": true
+    },
+    {
+      "id": "pathways.colleges.study",
+      "parent_id": "pathways.colleges",
+      "level": 3,
+      "aliases": [],
+      "label": "Учебная и производственная практика",
+      "active": true
+    },
+    {
+      "id": "pathways.colleges.next_step",
+      "parent_id": "pathways.colleges",
+      "level": 3,
+      "aliases": [],
+      "label": "Переход из СПО в вуз или работу",
+      "active": true
+    },
+    {
+      "id": "pathways.olympiads",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Олимпиады",
+      "active": true,
+      "description": "Выбор соревнования, подготовка и опыт прохождения этапов."
+    },
+    {
+      "id": "pathways.olympiads.choice",
+      "parent_id": "pathways.olympiads",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор олимпиады",
+      "active": true
+    },
+    {
+      "id": "pathways.olympiads.preparation",
+      "parent_id": "pathways.olympiads",
+      "level": 3,
+      "aliases": [],
+      "label": "Подготовка к этапу",
+      "active": true
+    },
+    {
+      "id": "pathways.olympiads.participation",
+      "parent_id": "pathways.olympiads",
+      "level": 3,
+      "aliases": [],
+      "label": "Участие и разбор опыта",
+      "active": true
+    },
+    {
+      "id": "pathways.olympiads.admission",
+      "parent_id": "pathways.olympiads",
+      "level": 3,
+      "aliases": [],
+      "label": "Применение результата при поступлении",
+      "active": true
+    },
+    {
+      "id": "pathways.research",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Научная работа",
+      "aliases": [],
+      "active": true,
+      "description": "От первого исследовательского вопроса до лаборатории, публикации и аспирантуры."
+    },
+    {
+      "id": "pathways.research.question",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Постановка вопроса",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.sources",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Поиск научных источников",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.experiment",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "label": "Планирование исследования",
+      "aliases": [],
+      "active": true
+    },
+    {
+      "id": "pathways.research.supervisor",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "aliases": [],
+      "label": "Поиск научного руководителя и лаборатории",
+      "active": true
+    },
+    {
+      "id": "pathways.research.writing",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "aliases": [],
+      "label": "Научная работа и публикация",
+      "active": true
+    },
+    {
+      "id": "pathways.research.presentation",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "aliases": [],
+      "label": "Доклад и научная конференция",
+      "active": true
+    },
+    {
+      "id": "pathways.research.postgraduate",
+      "parent_id": "pathways.research",
+      "level": 3,
+      "aliases": [],
+      "label": "Аспирантура и научная траектория",
+      "active": true
+    },
+    {
+      "id": "pathways.hackathons",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Хакатоны и проектные соревнования",
+      "active": true,
+      "description": "Первое участие, выбор роли, работа в команде и представление результата в любой предметной области."
+    },
+    {
+      "id": "pathways.hackathons.choice",
+      "parent_id": "pathways.hackathons",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор соревнования и кейса",
+      "active": true
+    },
+    {
+      "id": "pathways.hackathons.preparation",
+      "parent_id": "pathways.hackathons",
+      "level": 3,
+      "aliases": [],
+      "label": "Подготовка к первому участию",
+      "active": true
+    },
+    {
+      "id": "pathways.hackathons.team",
+      "parent_id": "pathways.hackathons",
+      "level": 3,
+      "aliases": [],
+      "label": "Команда и роли",
+      "active": true
+    },
+    {
+      "id": "pathways.hackathons.delivery",
+      "parent_id": "pathways.hackathons",
+      "level": 3,
+      "aliases": [],
+      "label": "Прототип и защита решения",
+      "active": true
+    },
+    {
+      "id": "pathways.hackathons.reflection",
+      "parent_id": "pathways.hackathons",
+      "level": 3,
+      "aliases": [],
+      "label": "Разбор опыта и следующий проект",
+      "active": true
+    },
+    {
+      "id": "pathways.courses",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Курсы и учебные программы",
+      "active": true,
+      "description": "Сравнить отдельные учебные курсы, понять требования и выбрать подходящий формат."
+    },
+    {
+      "id": "pathways.courses.choice",
+      "parent_id": "pathways.courses",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор и сравнение курсов",
+      "active": true
+    },
+    {
+      "id": "pathways.courses.prerequisites",
+      "parent_id": "pathways.courses",
+      "level": 3,
+      "aliases": [],
+      "label": "Что знать до начала курса",
+      "active": true
+    },
+    {
+      "id": "pathways.courses.learning",
+      "parent_id": "pathways.courses",
+      "level": 3,
+      "aliases": [],
+      "label": "Прохождение и учебная нагрузка",
+      "active": true
+    },
+    {
+      "id": "pathways.courses.outcome",
+      "parent_id": "pathways.courses",
+      "level": 3,
+      "aliases": [],
+      "label": "Результат, практика и продолжение",
+      "active": true
+    },
+    {
+      "id": "pathways.supplementary",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Дополнительное образование",
+      "active": true,
+      "description": "Кружки, секции, летние школы, переподготовка и повышение квалификации."
+    },
+    {
+      "id": "pathways.supplementary.clubs",
+      "parent_id": "pathways.supplementary",
+      "level": 3,
+      "aliases": [],
+      "label": "Кружки и дополнительные занятия",
+      "active": true
+    },
+    {
+      "id": "pathways.supplementary.schools",
+      "parent_id": "pathways.supplementary",
+      "level": 3,
+      "aliases": [],
+      "label": "Летние и выездные школы",
+      "active": true
+    },
+    {
+      "id": "pathways.supplementary.retraining",
+      "parent_id": "pathways.supplementary",
+      "level": 3,
+      "aliases": [],
+      "label": "Профессиональная переподготовка",
+      "active": true
+    },
+    {
+      "id": "pathways.supplementary.qualification",
+      "parent_id": "pathways.supplementary",
+      "level": 3,
+      "aliases": [],
+      "label": "Повышение квалификации",
+      "active": true
+    },
+    {
+      "id": "pathways.specialties",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Специальности и направления",
+      "active": true,
+      "description": "Понять содержание специальности и выбрать образовательный путь до выбора конкретного учреждения."
+    },
+    {
+      "id": "pathways.specialties.exploration",
+      "parent_id": "pathways.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Что изучают на направлении",
+      "active": true
+    },
+    {
+      "id": "pathways.specialties.comparison",
+      "parent_id": "pathways.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Сравнение специальностей",
+      "active": true
+    },
+    {
+      "id": "pathways.specialties.route",
+      "parent_id": "pathways.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Какой образовательный путь выбрать",
+      "active": true
+    },
+    {
+      "id": "pathways.specialties.change",
+      "parent_id": "pathways.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Смена направления обучения",
+      "active": true
+    },
+    {
+      "id": "pathways.funding",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Стипендии и поддержка обучения",
+      "active": true,
+      "description": "Опыт поиска стипендий, учебных грантов и подготовки заявки на поддержку."
+    },
+    {
+      "id": "pathways.funding.scholarships",
+      "parent_id": "pathways.funding",
+      "level": 3,
+      "aliases": [],
+      "label": "Стипендии",
+      "active": true
+    },
+    {
+      "id": "pathways.funding.grants",
+      "parent_id": "pathways.funding",
+      "level": 3,
+      "aliases": [],
+      "label": "Учебные и исследовательские гранты",
+      "active": true
+    },
+    {
+      "id": "pathways.funding.application",
+      "parent_id": "pathways.funding",
+      "level": 3,
+      "aliases": [],
+      "label": "Заявка, мотивация и портфолио",
+      "active": true
+    },
+    {
+      "id": "pathways.funding.support",
+      "parent_id": "pathways.funding",
+      "level": 3,
+      "aliases": [],
+      "label": "Общежитие и поддержка обучающихся",
+      "active": true
+    },
+    {
+      "id": "pathways.mobility",
+      "parent_id": "pathways",
+      "level": 2,
+      "aliases": [],
+      "label": "Обмены и академическая мобильность",
+      "active": true,
+      "description": "Опыт участия в обменах, учебных поездках и продолжения образования в другой среде."
+    },
+    {
+      "id": "pathways.mobility.choice",
+      "parent_id": "pathways.mobility",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор обмена или учебной поездки",
+      "active": true
+    },
+    {
+      "id": "pathways.mobility.application",
+      "parent_id": "pathways.mobility",
+      "level": 3,
+      "aliases": [],
+      "label": "Отбор и документы",
+      "active": true
+    },
+    {
+      "id": "pathways.mobility.credits",
+      "parent_id": "pathways.mobility",
+      "level": 3,
+      "aliases": [],
+      "label": "Учебный план и перезачёт",
+      "active": true
+    },
+    {
+      "id": "pathways.mobility.adaptation",
+      "parent_id": "pathways.mobility",
+      "level": 3,
+      "aliases": [],
+      "label": "Адаптация в новой образовательной среде",
+      "active": true
+    },
+    {
+      "id": "career",
+      "parent_id": null,
+      "level": 1,
+      "aliases": [
+        "работа",
+        "стажировка",
+        "профессия",
+        "профессиональный путь"
+      ],
+      "label": "Карьера",
+      "active": true,
+      "description": "Разберитесь в профессии, стажировке и работе с участниками, у которых есть соответствующий опыт."
+    },
+    {
+      "id": "career.work",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Работа и первая практика",
+      "active": true,
+      "description": "Первые рабочие задачи, адаптация и организация работы с опорой на опыт коллег."
+    },
+    {
+      "id": "career.work.first_job",
+      "parent_id": "career.work",
+      "level": 3,
+      "aliases": [],
+      "label": "Первая работа",
+      "active": true
+    },
+    {
+      "id": "career.work.adaptation",
+      "parent_id": "career.work",
+      "level": 3,
+      "aliases": [],
+      "label": "Адаптация и испытательный срок",
+      "active": true
+    },
+    {
+      "id": "career.work.daily_tasks",
+      "parent_id": "career.work",
+      "level": 3,
+      "aliases": [],
+      "label": "Рабочие задачи и ожидания",
+      "active": true
+    },
+    {
+      "id": "career.work.study_balance",
+      "parent_id": "career.work",
+      "level": 3,
+      "aliases": [],
+      "label": "Совмещение работы и учёбы",
+      "active": true
+    },
+    {
+      "id": "career.internships",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Стажировки и практика",
+      "active": true,
+      "description": "Выбор стажировки, отбор и получение полезного опыта, включая научные стажировки."
+    },
+    {
+      "id": "career.internships.search",
+      "parent_id": "career.internships",
+      "level": 3,
+      "aliases": [],
+      "label": "Поиск и выбор стажировки",
+      "active": true
+    },
+    {
+      "id": "career.internships.selection",
+      "parent_id": "career.internships",
+      "level": 3,
+      "aliases": [],
+      "label": "Отбор на стажировку",
+      "active": true
+    },
+    {
+      "id": "career.internships.practice",
+      "parent_id": "career.internships",
+      "level": 3,
+      "aliases": [],
+      "label": "Прохождение и обратная связь",
+      "active": true
+    },
+    {
+      "id": "career.internships.research",
+      "parent_id": "career.internships",
+      "level": 3,
+      "aliases": [],
+      "label": "Научная стажировка и работа в лаборатории",
+      "active": true
+    },
+    {
+      "id": "career.internships.next_step",
+      "parent_id": "career.internships",
+      "level": 3,
+      "aliases": [],
+      "label": "Переход со стажировки на работу",
+      "active": true
+    },
+    {
+      "id": "career.companies",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Компании и организации",
+      "active": true,
+      "description": "Узнать о задачах, командах и отборе у людей с опытом работы в конкретной организации."
+    },
+    {
+      "id": "career.companies.choice",
+      "parent_id": "career.companies",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор организации",
+      "active": true
+    },
+    {
+      "id": "career.companies.teams",
+      "parent_id": "career.companies",
+      "level": 3,
+      "aliases": [],
+      "label": "Команды и рабочие процессы",
+      "active": true
+    },
+    {
+      "id": "career.companies.selection",
+      "parent_id": "career.companies",
+      "level": 3,
+      "aliases": [],
+      "label": "Как устроен отбор",
+      "active": true
+    },
+    {
+      "id": "career.companies.research",
+      "parent_id": "career.companies",
+      "level": 3,
+      "aliases": [],
+      "label": "Лаборатории и исследовательские организации",
+      "active": true
+    },
+    {
+      "id": "career.vacancies",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Вакансии и требования",
+      "active": true,
+      "description": "Разобраться в опубликованной вакансии и подготовиться к отклику; объявления не размещаются."
+    },
+    {
+      "id": "career.vacancies.requirements",
+      "parent_id": "career.vacancies",
+      "level": 3,
+      "aliases": [],
+      "label": "Как читать требования",
+      "active": true
+    },
+    {
+      "id": "career.vacancies.fit",
+      "parent_id": "career.vacancies",
+      "level": 3,
+      "aliases": [],
+      "label": "Оценка соответствия своему опыту",
+      "active": true
+    },
+    {
+      "id": "career.vacancies.questions",
+      "parent_id": "career.vacancies",
+      "level": 3,
+      "aliases": [],
+      "label": "Что уточнить до отклика",
+      "active": true
+    },
+    {
+      "id": "career.vacancies.offer",
+      "parent_id": "career.vacancies",
+      "level": 3,
+      "aliases": [],
+      "label": "Как сравнить предложения",
+      "active": true
+    },
+    {
+      "id": "career.specialties",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Профессии и специализации",
+      "active": true,
+      "description": "Что делает специалист, какие навыки нужны и как устроены разные профессиональные роли."
+    },
+    {
+      "id": "career.specialties.daily_work",
+      "parent_id": "career.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Чем занимается специалист",
+      "active": true
+    },
+    {
+      "id": "career.specialties.skills",
+      "parent_id": "career.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Карта навыков и вход в профессию",
+      "active": true
+    },
+    {
+      "id": "career.specialties.comparison",
+      "parent_id": "career.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Сравнение профессиональных ролей",
+      "active": true
+    },
+    {
+      "id": "career.specialties.research",
+      "parent_id": "career.specialties",
+      "level": 3,
+      "aliases": [],
+      "label": "Профессия исследователя",
+      "active": true
+    },
+    {
+      "id": "career.application",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Резюме и собеседования",
+      "active": true,
+      "description": "Представить свой опыт и подготовиться к этапам отбора с помощью тех, кто их проходил."
+    },
+    {
+      "id": "career.application.cv",
+      "parent_id": "career.application",
+      "level": 3,
+      "aliases": [],
+      "label": "Резюме и описание опыта",
+      "active": true
+    },
+    {
+      "id": "career.application.portfolio",
+      "parent_id": "career.application",
+      "level": 3,
+      "aliases": [],
+      "label": "Портфолио и примеры работ",
+      "active": true
+    },
+    {
+      "id": "career.application.interview",
+      "parent_id": "career.application",
+      "level": 3,
+      "aliases": [],
+      "label": "Собеседование",
+      "active": true
+    },
+    {
+      "id": "career.application.assignment",
+      "parent_id": "career.application",
+      "level": 3,
+      "aliases": [],
+      "label": "Тестовое задание и кейс",
+      "active": true
+    },
+    {
+      "id": "career.transition",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Смена профессии",
+      "active": true,
+      "description": "Определить переносимые навыки и спланировать переход к новой профессиональной роли."
+    },
+    {
+      "id": "career.transition.choice",
+      "parent_id": "career.transition",
+      "level": 3,
+      "aliases": [],
+      "label": "Выбор нового направления",
+      "active": true
+    },
+    {
+      "id": "career.transition.skills",
+      "parent_id": "career.transition",
+      "level": 3,
+      "aliases": [],
+      "label": "Переносимые навыки и пробелы",
+      "active": true
+    },
+    {
+      "id": "career.transition.plan",
+      "parent_id": "career.transition",
+      "level": 3,
+      "aliases": [],
+      "label": "План перехода и первая практика",
+      "active": true
+    },
+    {
+      "id": "career.transition.return",
+      "parent_id": "career.transition",
+      "level": 3,
+      "aliases": [],
+      "label": "Возвращение к работе после перерыва",
+      "active": true
+    },
+    {
+      "id": "career.growth",
+      "parent_id": "career",
+      "level": 2,
+      "aliases": [],
+      "label": "Развитие специалиста",
+      "active": true,
+      "description": "Следующий уровень задач, наставничество и развитие профессионального опыта."
+    },
+    {
+      "id": "career.growth.plan",
+      "parent_id": "career.growth",
+      "level": 3,
+      "aliases": [],
+      "label": "План развития и обратная связь",
+      "active": true
+    },
+    {
+      "id": "career.growth.responsibility",
+      "parent_id": "career.growth",
+      "level": 3,
+      "aliases": [],
+      "label": "Новые задачи и ответственность",
+      "active": true
+    },
+    {
+      "id": "career.growth.mentoring",
+      "parent_id": "career.growth",
+      "level": 3,
+      "aliases": [],
+      "label": "Наставничество и передача опыта",
+      "active": true
+    },
+    {
+      "id": "career.growth.research",
+      "parent_id": "career.growth",
+      "level": 3,
+      "aliases": [],
+      "label": "Развитие научной карьеры",
+      "active": true
+    },
+    {
+      "id": "pathways.admissions.application.bvi",
+      "parent_id": "pathways.admissions.application",
+      "level": 4,
+      "aliases": [],
+      "label": "Поступление по олимпиаде / БВИ",
+      "active": true,
+      "description": "Опыт олимпиадного поступления; конкретные условия уточняются у приёмной комиссии."
+    },
+    {
+      "id": "pathways.admissions.application.general",
+      "parent_id": "pathways.admissions.application",
+      "level": 4,
+      "aliases": [],
+      "label": "Общий конкурс",
+      "active": true,
+      "description": "Опыт подачи документов и выбора приоритетов."
+    },
+    {
+      "id": "pathways.admissions.program_choice.curriculum",
+      "parent_id": "pathways.admissions.program_choice",
+      "level": 4,
+      "aliases": [],
+      "label": "Содержание программы",
+      "active": true,
+      "description": "Что реально изучают и как устроена нагрузка."
+    },
+    {
+      "id": "pathways.admissions.program_choice.comparison",
+      "parent_id": "pathways.admissions.program_choice",
+      "level": 4,
+      "aliases": [],
+      "label": "Сравнение программ",
+      "active": true,
+      "description": "Чем различаются программы и образовательная среда."
+    },
+    {
+      "id": "pathways.admissions.study.first_year",
+      "parent_id": "pathways.admissions.study",
+      "level": 4,
+      "aliases": [],
+      "label": "Первый курс",
+      "active": true,
+      "description": "Адаптация к предметам, нагрузке и самостоятельной учёбе."
+    },
+    {
+      "id": "pathways.admissions.study.practice",
+      "parent_id": "pathways.admissions.study",
+      "level": 4,
+      "aliases": [],
+      "label": "Практика и выпускная работа",
+      "active": true,
+      "description": "Выбор темы, базы практики и связи с дальнейшим направлением."
+    },
+    {
+      "id": "pathways.olympiads.preparation.plan",
+      "parent_id": "pathways.olympiads.preparation",
+      "level": 4,
+      "aliases": [],
+      "label": "План подготовки",
+      "active": true,
+      "description": "Как организовать подготовку к выбранному этапу."
+    },
+    {
+      "id": "pathways.olympiads.preparation.experience",
+      "parent_id": "pathways.olympiads.preparation",
+      "level": 4,
+      "aliases": [],
+      "label": "Опыт участников этапа",
+      "active": true,
+      "description": "Что оказалось полезным при подготовке и участии."
+    },
+    {
+      "id": "pathways.research.postgraduate.choice",
+      "parent_id": "pathways.research.postgraduate",
+      "level": 4,
+      "aliases": [],
+      "label": "Выбор аспирантуры и научной темы",
+      "active": true,
+      "description": "Опыт выбора программы, темы и исследовательской группы."
+    },
+    {
+      "id": "pathways.research.postgraduate.admission",
+      "parent_id": "pathways.research.postgraduate",
+      "level": 4,
+      "aliases": [],
+      "label": "Подготовка к поступлению в аспирантуру",
+      "active": true,
+      "description": "Опыт отбора и подготовки исследовательского предложения."
+    },
+    {
+      "id": "pathways.research.writing.structure",
+      "parent_id": "pathways.research.writing",
+      "level": 4,
+      "aliases": [],
+      "label": "Структура научной работы",
+      "active": true,
+      "description": "Как представить вопрос, метод, результаты и ограничения."
+    },
+    {
+      "id": "pathways.research.writing.publication",
+      "parent_id": "pathways.research.writing",
+      "level": 4,
+      "aliases": [],
+      "label": "Первая публикация",
+      "active": true,
+      "description": "Опыт подготовки рукописи и общения с редакцией."
+    },
+    {
+      "id": "pathways.hackathons.team.roles",
+      "parent_id": "pathways.hackathons.team",
+      "level": 4,
+      "aliases": [],
+      "label": "Выбор роли",
+      "active": true,
+      "description": "Понять вклад аналитика, разработчика, дизайнера или предметного специалиста."
+    },
+    {
+      "id": "pathways.hackathons.team.collaboration",
+      "parent_id": "pathways.hackathons.team",
+      "level": 4,
+      "aliases": [],
+      "label": "Организация работы команды",
+      "active": true,
+      "description": "Распределение задач, договорённости и короткий срок."
+    },
+    {
+      "id": "career.application.interview.introduction",
+      "parent_id": "career.application.interview",
+      "level": 4,
+      "aliases": [],
+      "label": "Рассказ о себе",
+      "active": true,
+      "description": "Как понятно представить свой опыт и мотивацию."
+    },
+    {
+      "id": "career.application.interview.professional",
+      "parent_id": "career.application.interview",
+      "level": 4,
+      "aliases": [],
+      "label": "Профессиональное интервью",
+      "active": true,
+      "description": "Опыт обсуждения задач и навыков по выбранной специальности."
+    },
+    {
+      "id": "career.internships.research.lab",
+      "parent_id": "career.internships.research",
+      "level": 4,
+      "aliases": [],
+      "label": "Выбор лаборатории",
+      "active": true,
+      "description": "Научная тема, задачи стажёра и формат взаимодействия с руководителем."
+    },
+    {
+      "id": "career.internships.research.application",
+      "parent_id": "career.internships.research",
+      "level": 4,
+      "aliases": [],
+      "label": "Заявка на научную стажировку",
+      "active": true,
+      "description": "Как представить исследовательский интерес и имеющийся опыт."
+    },
+    {
+      "id": "career.growth.research.industry",
+      "parent_id": "career.growth.research",
+      "level": 4,
+      "aliases": [],
+      "label": "Исследования в компании",
+      "active": true,
+      "description": "Переход между академическими и прикладными исследованиями."
+    },
+    {
+      "id": "career.growth.research.academic",
+      "parent_id": "career.growth.research",
+      "level": 4,
+      "aliases": [],
+      "label": "Академическая карьера",
+      "active": true,
+      "description": "Опыт выбора следующей исследовательской позиции и развития научного профиля."
+    },
+    {
+      "id": "science",
+      "parent_id": null,
+      "level": 1,
+      "label": "Науки и учебные дисциплины",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.math",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Математика",
+      "aliases": [
+        "математика",
+        "алгебра"
+      ],
+      "active": false
+    },
+    {
+      "id": "science.math.percentages",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Проценты",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.physics",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Физика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.physics.optics",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Оптика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.biology",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Биология",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.biology.cells",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Клетки",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages",
+      "parent_id": null,
+      "level": 1,
+      "label": "Языки и гуманитарные навыки",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Английский язык",
+      "aliases": [
+        "английский",
+        "English"
+      ],
+      "active": false
+    },
+    {
+      "id": "languages.english.tenses",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Времена глагола",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.russian",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Русский язык",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.russian.punctuation",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Пунктуация",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.writing",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Работа с текстом",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.writing.structure",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Структура объяснения",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital",
+      "parent_id": null,
+      "level": 1,
+      "label": "Цифровые инструменты и технологии",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.spreadsheets",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Электронные таблицы",
+      "aliases": [
+        "таблицы",
+        "Excel",
+        "Google Sheets"
+      ],
+      "active": false
+    },
+    {
+      "id": "digital.spreadsheets.pivot_tables",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Сводные таблицы",
+      "aliases": [
+        "сводная",
+        "pivot"
+      ],
+      "active": false
+    },
+    {
+      "id": "digital.web",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Веб-технологии",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.web.html",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Основы HTML",
+      "aliases": [
+        "разметка",
+        "HTML"
+      ],
+      "active": false
+    },
+    {
+      "id": "digital.python",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Python",
+      "aliases": [
+        "питон",
+        "Python"
+      ],
+      "active": false
+    },
+    {
+      "id": "digital.python.collections",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Коллекции данных",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical",
+      "parent_id": null,
+      "level": 1,
+      "label": "Практические навыки и механизмы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.mechanisms",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Механизмы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.mechanisms.gear_ratio",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Передаточное отношение",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.sewing",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Шитьё",
+      "aliases": [
+        "шитье"
+      ],
+      "active": false
+    },
+    {
+      "id": "practical.sewing.stitches",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Основные швы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.photography",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Фотография",
+      "aliases": [
+        "фото",
+        "фотография"
+      ],
+      "active": false
+    },
+    {
+      "id": "practical.photography.exposure",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Экспозиция",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.career",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Освоение профессии",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.career.learning_plan",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "План обучения",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.math.equations",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Уравнения",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.math.geometry",
+      "parent_id": "science.math",
+      "level": 3,
+      "label": "Геометрия",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.physics.mechanics",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Механика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.physics.electricity",
+      "parent_id": "science.physics",
+      "level": 3,
+      "label": "Электрические явления",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.biology.genetics",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Основы генетики",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.biology.ecology",
+      "parent_id": "science.biology",
+      "level": 3,
+      "label": "Экология",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.chemistry",
+      "parent_id": "science",
+      "level": 2,
+      "label": "Химия",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.chemistry.reactions",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Химические реакции",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.chemistry.solutions",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Растворы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.chemistry.periodic_table",
+      "parent_id": "science.chemistry",
+      "level": 3,
+      "label": "Периодическая система",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.history",
+      "parent_id": "science",
+      "level": 2,
+      "label": "История",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.history.sources",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Работа с историческими источниками",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.history.chronology",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Хронология",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "science.history.causes",
+      "parent_id": "science.history",
+      "level": 3,
+      "label": "Причины и последствия событий",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english.listening",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Понимание на слух",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english.conversation",
+      "parent_id": "languages.english",
+      "level": 3,
+      "label": "Разговорная практика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.russian.spelling",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Орфография",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.russian.text_analysis",
+      "parent_id": "languages.russian",
+      "level": 3,
+      "label": "Анализ текста",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.writing.argumentation",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Аргументация",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.writing.editing",
+      "parent_id": "languages.writing",
+      "level": 3,
+      "label": "Редактирование текста",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.german",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Немецкий язык",
+      "aliases": [
+        "немецкий",
+        "Deutsch"
+      ],
+      "active": false
+    },
+    {
+      "id": "languages.german.grammar",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Основы грамматики",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.german.pronunciation",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Произношение",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.german.conversation",
+      "parent_id": "languages.german",
+      "level": 3,
+      "label": "Разговорная практика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.public_speaking",
+      "parent_id": "languages",
+      "level": 2,
+      "label": "Публичные выступления",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.public_speaking.structure",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Структура выступления",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.public_speaking.slides",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Наглядные материалы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.public_speaking.questions",
+      "parent_id": "languages.public_speaking",
+      "level": 3,
+      "label": "Ответы на вопросы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.spreadsheets.formulas",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Формулы и ссылки",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.spreadsheets.charts",
+      "parent_id": "digital.spreadsheets",
+      "level": 3,
+      "label": "Диаграммы",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.web.css",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Оформление страниц",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.web.http",
+      "parent_id": "digital.web",
+      "level": 3,
+      "label": "Как работает HTTP",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.python.functions",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Функции",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.python.files",
+      "parent_id": "digital.python",
+      "level": 3,
+      "label": "Работа с файлами",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.data_analysis",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Анализ данных",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.data_analysis.cleaning",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Очистка данных",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.data_analysis.statistics",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Описательная статистика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.data_analysis.visualization",
+      "parent_id": "digital.data_analysis",
+      "level": 3,
+      "label": "Визуализация данных",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.cyber_hygiene",
+      "parent_id": "digital",
+      "level": 2,
+      "label": "Цифровая грамотность и безопасность",
+      "aliases": [
+        "кибергигиена"
+      ],
+      "active": false
+    },
+    {
+      "id": "digital.cyber_hygiene.passwords",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Пароли и вход в аккаунт",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.cyber_hygiene.phishing",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Распознавание обмана",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.cyber_hygiene.backups",
+      "parent_id": "digital.cyber_hygiene",
+      "level": 3,
+      "label": "Резервные копии",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.mechanisms.levers",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Рычаги",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.mechanisms.bearings",
+      "parent_id": "practical.mechanisms",
+      "level": 3,
+      "label": "Подшипники и трение",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.sewing.patterns",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Понимание выкройки",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.sewing.fabrics",
+      "parent_id": "practical.sewing",
+      "level": 3,
+      "label": "Свойства тканей",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.photography.composition",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Композиция",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.photography.light",
+      "parent_id": "practical.photography",
+      "level": 3,
+      "label": "Работа со светом",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.electronics",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Основы электроники",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.electronics.circuits",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Чтение простых схем",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.electronics.measurement",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Измерение величин",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.electronics.components",
+      "parent_id": "practical.electronics",
+      "level": 3,
+      "label": "Назначение компонентов",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.cooking",
+      "parent_id": "practical",
+      "level": 2,
+      "label": "Наука приготовления пищи",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.cooking.heat_transfer",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Теплообмен",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.cooking.proportions",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Пропорции и пересчёт рецепта",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "practical.cooking.fermentation",
+      "parent_id": "practical.cooking",
+      "level": 3,
+      "label": "Принципы брожения",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.career.skills_map",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "Карта навыков",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.career.portfolio",
+      "parent_id": "pathways.career",
+      "level": 3,
+      "label": "Учебное портфолио",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.internships",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Стажировки и первая практика",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.internships.search",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Поиск возможностей",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.internships.cv",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Описание опыта в резюме",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.internships.interview",
+      "parent_id": "pathways.internships",
+      "level": 3,
+      "label": "Подготовка к собеседованию",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.projects",
+      "parent_id": "pathways",
+      "level": 2,
+      "label": "Учебные проекты и соревнования",
+      "aliases": [
+        "хакатон",
+        "олимпиадный проект"
+      ],
+      "active": false
+    },
+    {
+      "id": "pathways.projects.team",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "Командные роли",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.projects.planning",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "План проекта",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "pathways.projects.presentation",
+      "parent_id": "pathways.projects",
+      "level": 3,
+      "label": "Защита результата",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english.tenses.present_perfect",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Present Perfect",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english.tenses.past_simple",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Past Simple",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "languages.english.tenses.present_simple",
+      "parent_id": "languages.english.tenses",
+      "level": 4,
+      "label": "Present Simple",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.python.collections.lists",
+      "parent_id": "digital.python.collections",
+      "level": 4,
+      "label": "Списки",
+      "aliases": [],
+      "active": false
+    },
+    {
+      "id": "digital.python.collections.dictionaries",
+      "parent_id": "digital.python.collections",
+      "level": 4,
+      "label": "Словари",
+      "aliases": [
+        "dict",
+        "dictionary"
+      ],
+      "active": false
+    },
+    {
+      "id": "practical.mechanisms.gear_ratio.gear_pairs",
+      "parent_id": "practical.mechanisms.gear_ratio",
+      "level": 4,
+      "label": "Расчёт зубчатой пары",
+      "aliases": [],
+      "active": false
+    }
+  ],
+  "facets": [
+    {
+      "id": "organization",
+      "label": "Университет",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.research",
+        "pathways.mobility",
+        "pathways.funding"
+      ],
+      "values": [
+        {
+          "id": "itmo",
+          "label": "ИТМО"
+        },
+        {
+          "id": "mephi",
+          "label": "НИЯУ МИФИ"
+        },
+        {
+          "id": "bmstu",
+          "label": "МГТУ им. Н. Э. Баумана"
+        },
+        {
+          "id": "msu",
+          "label": "МГУ имени М. В. Ломоносова"
+        },
+        {
+          "id": "spbu",
+          "label": "СПбГУ"
+        },
+        {
+          "id": "hse",
+          "label": "НИУ ВШЭ"
+        },
+        {
+          "id": "nsu",
+          "label": "НГУ"
+        },
+        {
+          "id": "kfu",
+          "label": "Казанский федеральный университет"
+        },
+        {
+          "id": "urfu",
+          "label": "Уральский федеральный университет"
+        },
+        {
+          "id": "sfedu",
+          "label": "Южный федеральный университет"
+        },
+        {
+          "id": "dvfu",
+          "label": "Дальневосточный федеральный университет"
+        },
+        {
+          "id": "s-vfu",
+          "label": "Северо-Восточный федеральный университет"
+        },
+        {
+          "id": "herzen",
+          "label": "РГПУ имени А. И. Герцена"
+        },
+        {
+          "id": "sechenov",
+          "label": "Сеченовский Университет"
+        }
+      ],
+      "placeholder": "Начните вводить название вуза",
+      "help": "Редакционный список, не рейтинг и не полный реестр. Если вуза нет, укажите его в тексте вопроса или описании опыта."
+    },
+    {
+      "id": "company",
+      "label": "Компания / организация",
+      "applicable_topic_prefixes": [
+        "career"
+      ],
+      "values": [
+        {
+          "id": "yandex",
+          "label": "Яндекс"
+        },
+        {
+          "id": "sber",
+          "label": "Сбер"
+        },
+        {
+          "id": "vk",
+          "label": "VK"
+        },
+        {
+          "id": "tbank",
+          "label": "Т-Банк"
+        },
+        {
+          "id": "rzd",
+          "label": "РЖД"
+        },
+        {
+          "id": "rosatom",
+          "label": "Росатом"
+        },
+        {
+          "id": "sibur",
+          "label": "СИБУР"
+        },
+        {
+          "id": "gazprom_neft",
+          "label": "Газпром нефть"
+        },
+        {
+          "id": "rostelecom",
+          "label": "Ростелеком"
+        },
+        {
+          "id": "ozon",
+          "label": "Ozon"
+        }
+      ],
+      "placeholder": "Начните вводить название организации",
+      "help": "Стартовый редакционный список. Он не подтверждает открытые вакансии или стажировки. Если организации нет, укажите название в тексте."
+    },
+    {
+      "id": "specialty",
+      "label": "Область подготовки / работы",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.colleges",
+        "pathways.research",
+        "pathways.courses",
+        "pathways.supplementary",
+        "pathways.specialties",
+        "pathways.mobility",
+        "career"
+      ],
+      "values": [
+        {
+          "id": "informatics",
+          "label": "Информатика и вычислительная техника"
+        },
+        {
+          "id": "mathematics",
+          "label": "Математика и статистика"
+        },
+        {
+          "id": "engineering",
+          "label": "Инженерия и производство"
+        },
+        {
+          "id": "natural_sciences",
+          "label": "Естественные науки"
+        },
+        {
+          "id": "medicine",
+          "label": "Медицина и здоровье"
+        },
+        {
+          "id": "pedagogy",
+          "label": "Педагогика и образование"
+        },
+        {
+          "id": "economics",
+          "label": "Экономика и финансы"
+        },
+        {
+          "id": "management",
+          "label": "Менеджмент и управление"
+        },
+        {
+          "id": "law",
+          "label": "Право"
+        },
+        {
+          "id": "psychology",
+          "label": "Психология"
+        },
+        {
+          "id": "social_sciences",
+          "label": "Социальные науки"
+        },
+        {
+          "id": "humanities",
+          "label": "Гуманитарные науки"
+        },
+        {
+          "id": "languages",
+          "label": "Языки и перевод"
+        },
+        {
+          "id": "media",
+          "label": "Медиа и коммуникации"
+        },
+        {
+          "id": "design",
+          "label": "Дизайн и искусство"
+        },
+        {
+          "id": "architecture",
+          "label": "Архитектура и строительство"
+        },
+        {
+          "id": "agriculture",
+          "label": "Сельское хозяйство и биотехнологии"
+        },
+        {
+          "id": "service",
+          "label": "Сервис и туризм"
+        },
+        {
+          "id": "logistics",
+          "label": "Транспорт и логистика"
+        },
+        {
+          "id": "skilled_trades",
+          "label": "Рабочие профессии и технический сервис"
+        }
+      ],
+      "placeholder": "Найдите область специальности",
+      "help": "Это укрупнённые области. Конкретную учебную специальность выберите в поле «Специальность / программа», а рабочую роль — в «Профессия / роль»; если значения нет, допишите его в тексте."
+    },
+    {
+      "id": "education_program",
+      "label": "Специальность / программа",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.colleges",
+        "pathways.specialties"
+      ],
+      "placeholder": "Найдите специальность или программу",
+      "help": "Примеры специальностей разных уровней образования. Список не подтверждает наличие программы в выбранном учреждении. Точный профиль, код или отсутствующее название укажите в тексте.",
+      "values": [
+        {
+          "id": "software_engineering",
+          "label": "Программная инженерия"
+        },
+        {
+          "id": "computer_science",
+          "label": "Информатика и вычислительная техника"
+        },
+        {
+          "id": "applied_mathematics",
+          "label": "Прикладная математика и информатика"
+        },
+        {
+          "id": "information_security",
+          "label": "Информационная безопасность"
+        },
+        {
+          "id": "mechanical_engineering",
+          "label": "Машиностроение"
+        },
+        {
+          "id": "power_engineering",
+          "label": "Электроэнергетика и электротехника"
+        },
+        {
+          "id": "chemical_engineering",
+          "label": "Химическая технология"
+        },
+        {
+          "id": "construction",
+          "label": "Строительство"
+        },
+        {
+          "id": "architecture",
+          "label": "Архитектура"
+        },
+        {
+          "id": "biology",
+          "label": "Биология"
+        },
+        {
+          "id": "chemistry",
+          "label": "Химия"
+        },
+        {
+          "id": "physics",
+          "label": "Физика"
+        },
+        {
+          "id": "general_medicine",
+          "label": "Лечебное дело"
+        },
+        {
+          "id": "nursing",
+          "label": "Сестринское дело"
+        },
+        {
+          "id": "pharmacy",
+          "label": "Фармация"
+        },
+        {
+          "id": "teacher_education",
+          "label": "Педагогическое образование"
+        },
+        {
+          "id": "psychology",
+          "label": "Психология"
+        },
+        {
+          "id": "economics",
+          "label": "Экономика"
+        },
+        {
+          "id": "management",
+          "label": "Менеджмент"
+        },
+        {
+          "id": "jurisprudence",
+          "label": "Юриспруденция"
+        },
+        {
+          "id": "history",
+          "label": "История"
+        },
+        {
+          "id": "philology",
+          "label": "Филология"
+        },
+        {
+          "id": "linguistics",
+          "label": "Лингвистика"
+        },
+        {
+          "id": "journalism",
+          "label": "Журналистика"
+        },
+        {
+          "id": "design",
+          "label": "Дизайн"
+        },
+        {
+          "id": "agronomy",
+          "label": "Агрономия"
+        },
+        {
+          "id": "veterinary",
+          "label": "Ветеринария"
+        },
+        {
+          "id": "tourism",
+          "label": "Туризм"
+        },
+        {
+          "id": "hospitality",
+          "label": "Гостиничное дело"
+        },
+        {
+          "id": "transport_maintenance",
+          "label": "Техническое обслуживание и ремонт транспорта"
+        }
+      ]
+    },
+    {
+      "id": "career_role",
+      "label": "Профессия / роль",
+      "applicable_topic_prefixes": [
+        "career"
+      ],
+      "placeholder": "Найдите рабочую роль",
+      "help": "Роль уточняет область работы: например, аналитик в финансах или исследователь в медицине. Отсутствующую или более узкую специализацию допишите в тексте.",
+      "values": [
+        {
+          "id": "developer",
+          "label": "Разработчик"
+        },
+        {
+          "id": "analyst",
+          "label": "Аналитик"
+        },
+        {
+          "id": "engineer",
+          "label": "Инженер"
+        },
+        {
+          "id": "technologist",
+          "label": "Технолог"
+        },
+        {
+          "id": "researcher",
+          "label": "Исследователь / научный сотрудник"
+        },
+        {
+          "id": "laboratory_assistant",
+          "label": "Лаборант / техник"
+        },
+        {
+          "id": "teacher",
+          "label": "Учитель / преподаватель"
+        },
+        {
+          "id": "physician",
+          "label": "Врач"
+        },
+        {
+          "id": "nurse",
+          "label": "Медицинская сестра / медицинский брат"
+        },
+        {
+          "id": "psychologist",
+          "label": "Психолог"
+        },
+        {
+          "id": "economist",
+          "label": "Экономист"
+        },
+        {
+          "id": "accountant",
+          "label": "Бухгалтер"
+        },
+        {
+          "id": "lawyer",
+          "label": "Юрист"
+        },
+        {
+          "id": "designer",
+          "label": "Дизайнер"
+        },
+        {
+          "id": "journalist",
+          "label": "Журналист / редактор"
+        },
+        {
+          "id": "translator",
+          "label": "Переводчик"
+        },
+        {
+          "id": "marketer",
+          "label": "Маркетолог"
+        },
+        {
+          "id": "hr",
+          "label": "Специалист по работе с персоналом"
+        },
+        {
+          "id": "manager",
+          "label": "Менеджер"
+        },
+        {
+          "id": "project_manager",
+          "label": "Руководитель проектов"
+        },
+        {
+          "id": "architect",
+          "label": "Архитектор"
+        },
+        {
+          "id": "logistician",
+          "label": "Логист"
+        },
+        {
+          "id": "service_specialist",
+          "label": "Специалист по сервису"
+        },
+        {
+          "id": "skilled_worker",
+          "label": "Мастер / квалифицированный рабочий"
+        }
+      ]
+    },
+    {
+      "id": "study_level",
+      "label": "Уровень образования",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.research.postgraduate",
+        "pathways.colleges",
+        "pathways.specialties",
+        "pathways.mobility",
+        "pathways.funding"
+      ],
+      "values": [
+        {
+          "id": "school",
+          "label": "Школа"
+        },
+        {
+          "id": "spo",
+          "label": "Среднее профессиональное образование"
+        },
+        {
+          "id": "bachelor",
+          "label": "Бакалавриат"
+        },
+        {
+          "id": "specialist",
+          "label": "Специалитет"
+        },
+        {
+          "id": "master",
+          "label": "Магистратура"
+        },
+        {
+          "id": "postgraduate",
+          "label": "Аспирантура"
+        },
+        {
+          "id": "residency",
+          "label": "Ординатура"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Укажите уровень, о котором задаёте вопрос или на котором у вас есть опыт."
+    },
+    {
+      "id": "study_year",
+      "label": "Курс обучения",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.colleges"
+      ],
+      "values": [
+        {
+          "id": "year_1",
+          "label": "1-й курс"
+        },
+        {
+          "id": "year_2",
+          "label": "2-й курс"
+        },
+        {
+          "id": "year_3",
+          "label": "3-й курс"
+        },
+        {
+          "id": "year_4",
+          "label": "4-й курс"
+        },
+        {
+          "id": "year_5",
+          "label": "5-й курс"
+        },
+        {
+          "id": "year_6",
+          "label": "6-й курс"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Год обучения в вузе или колледже. Отдельные учебные курсы выбираются в разделе «Курсы и учебные программы»."
+    },
+    {
+      "id": "school_stage",
+      "label": "Этап школьного обучения",
+      "applicable_topic_prefixes": [
+        "pathways.schools",
+        "pathways.colleges.admission"
+      ],
+      "values": [
+        {
+          "id": "primary",
+          "label": "Начальная школа"
+        },
+        {
+          "id": "middle",
+          "label": "5–8 классы"
+        },
+        {
+          "id": "grade_9",
+          "label": "9-й класс"
+        },
+        {
+          "id": "grade_10",
+          "label": "10-й класс"
+        },
+        {
+          "id": "grade_11",
+          "label": "11-й класс"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "school_type",
+      "label": "Образовательная среда",
+      "applicable_topic_prefixes": [
+        "pathways.schools"
+      ],
+      "values": [
+        {
+          "id": "general",
+          "label": "Общеобразовательная школа"
+        },
+        {
+          "id": "lyceum",
+          "label": "Лицей"
+        },
+        {
+          "id": "gymnasium",
+          "label": "Гимназия"
+        },
+        {
+          "id": "specialized",
+          "label": "Профильная школа"
+        },
+        {
+          "id": "boarding",
+          "label": "Школа-интернат"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Название конкретной школы или лицея укажите в тексте; тип учреждения не означает точное совпадение школы."
+    },
+    {
+      "id": "admission_route",
+      "label": "Способ поступления",
+      "applicable_topic_prefixes": [
+        "pathways.admissions",
+        "pathways.olympiads.admission"
+      ],
+      "values": [
+        {
+          "id": "bvi",
+          "label": "БВИ"
+        },
+        {
+          "id": "general",
+          "label": "Общий конкурс"
+        },
+        {
+          "id": "targeted",
+          "label": "Целевое обучение"
+        },
+        {
+          "id": "separate_quota",
+          "label": "Поступление по квоте"
+        },
+        {
+          "id": "entrance_exams",
+          "label": "Внутренние вступительные испытания"
+        }
+      ],
+      "help": "Опыт участника не заменяет проверку актуальных правил приёма в выбранном учреждении."
+    },
+    {
+      "id": "subject",
+      "label": "Дисциплина",
+      "applicable_topic_prefixes": [
+        "pathways.schools",
+        "pathways.olympiads",
+        "pathways.hackathons",
+        "pathways.admissions"
+      ],
+      "values": [
+        {
+          "id": "informatics",
+          "label": "Информатика"
+        },
+        {
+          "id": "mathematics",
+          "label": "Математика"
+        },
+        {
+          "id": "physics",
+          "label": "Физика"
+        },
+        {
+          "id": "chemistry",
+          "label": "Химия"
+        },
+        {
+          "id": "biology",
+          "label": "Биология"
+        },
+        {
+          "id": "russian",
+          "label": "Русский язык"
+        },
+        {
+          "id": "literature",
+          "label": "Литература"
+        },
+        {
+          "id": "history",
+          "label": "История"
+        },
+        {
+          "id": "social_studies",
+          "label": "Обществознание"
+        },
+        {
+          "id": "geography",
+          "label": "География"
+        },
+        {
+          "id": "foreign_languages",
+          "label": "Иностранные языки"
+        },
+        {
+          "id": "economics",
+          "label": "Экономика"
+        },
+        {
+          "id": "law",
+          "label": "Право"
+        },
+        {
+          "id": "technology",
+          "label": "Технология и инженерия"
+        },
+        {
+          "id": "ecology",
+          "label": "Экология"
+        },
+        {
+          "id": "art",
+          "label": "Искусство"
+        }
+      ]
+    },
+    {
+      "id": "olympiad",
+      "label": "Олимпиада",
+      "applicable_topic_prefixes": [
+        "pathways.olympiads"
+      ],
+      "values": [
+        {
+          "id": "vsosh",
+          "label": "Всероссийская олимпиада школьников"
+        },
+        {
+          "id": "high_standard",
+          "label": "Высшая проба"
+        },
+        {
+          "id": "lomonosov",
+          "label": "Ломоносов"
+        },
+        {
+          "id": "conquer_sparrow_hills",
+          "label": "Покори Воробьёвы горы!"
+        },
+        {
+          "id": "nto",
+          "label": "Национальная технологическая олимпиада"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Если нужной олимпиады нет, напишите название в вопросе. Условия, перечни и льготы проверяйте у организатора и вуза."
+    },
+    {
+      "id": "olympiad_stage",
+      "label": "Этап олимпиады",
+      "applicable_topic_prefixes": [
+        "pathways.olympiads.preparation",
+        "pathways.olympiads.participation"
+      ],
+      "values": [
+        {
+          "id": "school",
+          "label": "Школьный"
+        },
+        {
+          "id": "municipal",
+          "label": "Муниципальный"
+        },
+        {
+          "id": "regional",
+          "label": "Региональный"
+        },
+        {
+          "id": "final",
+          "label": "Заключительный"
+        },
+        {
+          "id": "qualifying",
+          "label": "Отборочный"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Названия этапов зависят от соревнования; выберите соответствующий вашему случаю."
+    },
+    {
+      "id": "research_field",
+      "label": "Область исследования",
+      "applicable_topic_prefixes": [
+        "pathways.research.question",
+        "pathways.research.sources",
+        "pathways.research.experiment",
+        "pathways.research.writing",
+        "pathways.research.presentation",
+        "career.internships.research",
+        "career.growth.research"
+      ],
+      "values": [
+        {
+          "id": "natural",
+          "label": "Естественные науки"
+        },
+        {
+          "id": "technical",
+          "label": "Технические науки"
+        },
+        {
+          "id": "social",
+          "label": "Социальные науки"
+        },
+        {
+          "id": "humanities",
+          "label": "Гуманитарные науки"
+        },
+        {
+          "id": "medical",
+          "label": "Медицинские науки"
+        },
+        {
+          "id": "interdisciplinary",
+          "label": "Междисциплинарное исследование"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "career_stage",
+      "label": "Этап профессионального пути",
+      "applicable_topic_prefixes": [
+        "career.work",
+        "career.internships",
+        "career.vacancies",
+        "career.specialties",
+        "career.application",
+        "career.transition",
+        "career.growth"
+      ],
+      "values": [
+        {
+          "id": "exploring",
+          "label": "Выбираю профессию"
+        },
+        {
+          "id": "first_experience",
+          "label": "Первый опыт"
+        },
+        {
+          "id": "intern",
+          "label": "Стажёр"
+        },
+        {
+          "id": "junior",
+          "label": "Начинающий специалист"
+        },
+        {
+          "id": "experienced",
+          "label": "Специалист с опытом"
+        },
+        {
+          "id": "leading",
+          "label": "Ведущий специалист / руководитель"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Укажите этап, о котором хотите узнать или на котором можете помогать. Это не автоматически подтверждённый статус пользователя."
+    },
+    {
+      "id": "work_format",
+      "label": "Формат работы",
+      "applicable_topic_prefixes": [
+        "career.work",
+        "career.internships.search",
+        "career.internships.practice",
+        "career.internships.next_step",
+        "career.companies.teams",
+        "career.vacancies",
+        "career.transition"
+      ],
+      "values": [
+        {
+          "id": "office",
+          "label": "Очно"
+        },
+        {
+          "id": "remote",
+          "label": "Удалённо"
+        },
+        {
+          "id": "hybrid",
+          "label": "Гибридно"
+        },
+        {
+          "id": "part_time",
+          "label": "Неполная занятость"
+        },
+        {
+          "id": "project",
+          "label": "Проектная работа"
+        }
+      ],
+      "placeholder": "Найти значение",
+      "help": "Выберите только значимые для вопроса условия; формат сам по себе не подтверждает опыт в компании."
+    },
+    {
+      "id": "organization_type",
+      "label": "Тип организации",
+      "applicable_topic_prefixes": [
+        "career.companies",
+        "career.internships.research",
+        "career.growth.research"
+      ],
+      "values": [
+        {
+          "id": "business",
+          "label": "Компания"
+        },
+        {
+          "id": "startup",
+          "label": "Стартап"
+        },
+        {
+          "id": "university",
+          "label": "Университет"
+        },
+        {
+          "id": "research_institute",
+          "label": "Научный институт или лаборатория"
+        },
+        {
+          "id": "public",
+          "label": "Государственная или муниципальная организация"
+        },
+        {
+          "id": "nonprofit",
+          "label": "Некоммерческая организация"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "course_format",
+      "label": "Формат обучения",
+      "applicable_topic_prefixes": [
+        "pathways.courses",
+        "pathways.supplementary"
+      ],
+      "values": [
+        {
+          "id": "online_self_paced",
+          "label": "Онлайн в своём темпе"
+        },
+        {
+          "id": "online_group",
+          "label": "Онлайн с группой"
+        },
+        {
+          "id": "offline",
+          "label": "Очно"
+        },
+        {
+          "id": "hybrid",
+          "label": "Смешанный формат"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "course_goal",
+      "label": "Задача обучения",
+      "applicable_topic_prefixes": [
+        "pathways.courses",
+        "pathways.supplementary"
+      ],
+      "values": [
+        {
+          "id": "explore",
+          "label": "Познакомиться с областью"
+        },
+        {
+          "id": "basics",
+          "label": "Освоить основы"
+        },
+        {
+          "id": "practice",
+          "label": "Получить практику"
+        },
+        {
+          "id": "qualification",
+          "label": "Углубить квалификацию"
+        },
+        {
+          "id": "transition",
+          "label": "Подготовиться к смене направления"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "hackathon_role",
+      "label": "Роль в команде",
+      "applicable_topic_prefixes": [
+        "pathways.hackathons"
+      ],
+      "values": [
+        {
+          "id": "domain",
+          "label": "Предметный специалист"
+        },
+        {
+          "id": "analyst",
+          "label": "Аналитик / исследователь"
+        },
+        {
+          "id": "developer",
+          "label": "Разработчик"
+        },
+        {
+          "id": "designer",
+          "label": "Дизайнер"
+        },
+        {
+          "id": "product",
+          "label": "Продукт и презентация"
+        },
+        {
+          "id": "engineer",
+          "label": "Инженер / конструктор"
+        }
+      ],
+      "placeholder": "Найти значение"
+    },
+    {
+      "id": "project_stage",
+      "label": "Этап проекта",
+      "applicable_topic_prefixes": [
+        "pathways.projects",
+        "pathways.hackathons",
+        "pathways.research"
+      ],
+      "values": [
+        {
+          "id": "idea",
+          "label": "Замысел"
+        },
+        {
+          "id": "prototype",
+          "label": "Прототип"
+        },
+        {
+          "id": "presentation",
+          "label": "Защита результата"
+        }
+      ]
+    },
+    {
+      "id": "response_language",
+      "label": "Язык объяснения",
+      "applicable_topic_prefixes": [
+        "*"
+      ],
+      "values": [
+        {
+          "id": "ru",
+          "label": "Русский"
+        },
+        {
+          "id": "en",
+          "label": "Английский"
+        },
+        {
+          "id": "de",
+          "label": "Немецкий"
+        }
+      ],
+      "help": "Выбирайте язык только если он важен для общения."
+    },
+    {
+      "id": "learner_level",
+      "label": "Уровень обучающегося",
+      "applicable_topic_prefixes": [
+        "science",
+        "languages",
+        "digital",
+        "practical",
+        "pathways.career",
+        "pathways.internships",
+        "pathways.projects",
+        "pathways.courses",
+        "pathways.supplementary",
+        "pathways.admissions",
+        "pathways.research"
+      ],
+      "values": [
+        {
+          "id": "beginner",
+          "label": "Начинающий"
+        },
+        {
+          "id": "basics",
+          "label": "Освоил основы"
+        },
+        {
+          "id": "intermediate",
+          "label": "Средний уровень"
+        },
+        {
+          "id": "advanced",
+          "label": "Углублённый уровень"
+        }
+      ]
+    },
+    {
+      "id": "learning_context",
+      "label": "Формат освоения",
+      "applicable_topic_prefixes": [
+        "science",
+        "languages",
+        "digital",
+        "practical",
+        "pathways.career",
+        "pathways.internships",
+        "pathways.projects",
+        "pathways.admissions",
+        "pathways.research"
+      ],
+      "values": [
+        {
+          "id": "school",
+          "label": "Школьная программа"
+        },
+        {
+          "id": "university",
+          "label": "Учебная программа вуза"
+        },
+        {
+          "id": "self_learning",
+          "label": "Самостоятельное изучение"
+        },
+        {
+          "id": "work",
+          "label": "Задача из практики"
+        }
+      ]
+    },
+    {
+      "id": "tool",
+      "label": "Инструмент",
+      "applicable_topic_prefixes": [
+        "digital.spreadsheets"
+      ],
+      "values": [
+        {
+          "id": "excel",
+          "label": "Excel"
+        },
+        {
+          "id": "google_sheets",
+          "label": "Google Sheets"
+        },
+        {
+          "id": "libreoffice_calc",
+          "label": "LibreOffice Calc"
+        }
+      ]
+    },
+    {
+      "id": "tool_version",
+      "label": "Вариант инструмента",
+      "applicable_topic_prefixes": [
+        "digital.spreadsheets"
+      ],
+      "values": [
+        {
+          "id": "microsoft_365",
+          "label": "Microsoft 365"
+        },
+        {
+          "id": "other",
+          "label": "Другой вариант"
+        }
+      ]
+    },
+    {
+      "id": "mechanism_type",
+      "label": "Контекст механизма",
+      "applicable_topic_prefixes": [
+        "practical.mechanisms"
+      ],
+      "values": [
+        {
+          "id": "bicycle",
+          "label": "Велосипед"
+        },
+        {
+          "id": "educational_model",
+          "label": "Учебная модель"
+        },
+        {
+          "id": "gear_drive",
+          "label": "Зубчатая передача"
+        }
+      ]
+    },
+    {
+      "id": "language_level",
+      "label": "Языковой уровень",
+      "applicable_topic_prefixes": [
+        "languages.english",
+        "languages.german"
+      ],
+      "values": [
+        {
+          "id": "a1",
+          "label": "A1"
+        },
+        {
+          "id": "a2",
+          "label": "A2"
+        },
+        {
+          "id": "b1",
+          "label": "B1"
+        },
+        {
+          "id": "b2",
+          "label": "B2"
+        },
+        {
+          "id": "c1",
+          "label": "C1"
+        }
+      ]
+    }
+  ],
+  "curated_equivalences": [],
+  "rules": {
+    "competency_minimum_level": 2,
+    "optional_deeper_levels": true,
+    "within_facet": "OR",
+    "between_required_facets": "AND",
+    "ancestor_does_not_claim_all_descendants": true,
+    "new_topics_require_review": true
+  },
+  "source": "Редакционный каталог команды Синапс для MVP 25.09.2026. Организации и соревнования — примеры для уточнения опыта, не полный реестр, не рейтинг и не данные об актуальном наборе."
+}

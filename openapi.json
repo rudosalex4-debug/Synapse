@@ -1,0 +1,4439 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Синапс / Synapse",
+    "version": "0.12.0",
+    "description": "Synapse MVP: образовательные траектории и карьера. Правила сообщества, модерация по жалобам, уведомления о подходящих вопросах. Срез исходников 28.09; runtime-приёмка не выполнялась."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8080"
+    }
+  ],
+  "paths": {
+    "/health/live": {
+      "get": {
+        "summary": "Process health, independent of DB",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "summary": "Migrations and catalog readiness",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/bootstrap": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "mode",
+                    "maxConfigured",
+                    "version",
+                    "pilotMode"
+                  ],
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "enum": [
+                        "demo",
+                        "max"
+                      ]
+                    },
+                    "maxConfigured": {
+                      "type": "boolean"
+                    },
+                    "version": {
+                      "type": "string"
+                    },
+                    "pilotMode": {
+                      "type": "boolean",
+                      "description": "Whether closed-pilot admission is enabled. The account allowlist is never returned."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/taxonomy": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "version",
+                    "topics",
+                    "facets"
+                  ],
+                  "properties": {
+                    "version": {
+                      "type": "string"
+                    },
+                    "topics": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Topic"
+                      }
+                    },
+                    "facets": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Facet"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/demo": {
+      "post": {
+        "summary": "Development-only login",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "persona"
+                ],
+                "properties": {
+                  "persona": {
+                    "type": "string",
+                    "enum": [
+                      "anna",
+                      "boris"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "expiresAt",
+                    "user"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "displayName",
+                        "provenance"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "provenance": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/max": {
+      "post": {
+        "summary": "Validate signed raw MAX initData",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "initData"
+                ],
+                "properties": {
+                  "initData": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "token",
+                    "expiresAt",
+                    "user"
+                  ],
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "user": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "displayName",
+                        "provenance"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "displayName": {
+                          "type": "string"
+                        },
+                        "provenance": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Closed pilot access denied (PILOT_ACCESS_DENIED). After successful MAX signature validation, the error may show only the requesting person their own MAX ID for admission by the operator.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "summary": "Revoke current bearer session; idempotent for well-formed expired tokens",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "summary": "Get own coherent profile snapshot",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Quoted revision, e.g. \"0\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "summary": "Replace editable own profile atomically",
+        "parameters": [
+          {
+            "name": "If-Match",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^\"[0-9]+\"$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProfileInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Profile"
+                }
+              }
+            },
+            "headers": {
+              "ETag": {
+                "description": "Quoted revision, e.g. \"0\"",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": " Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages."
+      }
+    },
+    "/webhooks/max": {
+      "post": {
+        "summary": "Store normalized MAX event durably; duplicates acknowledged",
+        "parameters": [
+          {
+            "name": "X-Max-Bot-Api-Secret",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "update_type"
+                ],
+                "properties": {
+                  "update_type": {
+                    "type": "string"
+                  }
+                },
+                "description": "Official MAX Update schema. Supports bot_started, bot_stopped, dialog_removed, message_created, message_callback. Unknown types ignored."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "ok"
+                  ],
+                  "properties": {
+                    "ok": {
+                      "type": "boolean",
+                      "const": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Structured error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/requests": {
+      "get": {
+        "operationId": "listRequests",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Свои заявки или адресная лента",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Курсорная выдача по времени создания и ID. Подбор использует тему и её потомков, затем признаки одной компетенции, доступность, нагрузку и блокировки. Наличие в ленте не означает автоматического согласия помогать.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestScope"
+          },
+          {
+            "$ref": "#/components/parameters/RequestCursor"
+          },
+          {
+            "$ref": "#/components/parameters/RequestLimit"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createRequest",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Создать собственный черновик",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Автор берётся только из сессии. Создание не публикует вопрос и не отправляет уведомления MAX. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/requests/{id}": {
+      "get": {
+        "operationId": "getRequest",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Прочитать доступную заявку",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Автор читает собственные состояния; посторонний пользователь не получает приватный/закрытый объект по известному UUID. Доступ помощника зависит от участия или актуального соответствия открытому вопросу.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateDraftRequest",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Изменить собственный черновик с проверкой версии",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          },
+          "428": {
+            "$ref": "#/components/responses/WorkflowError428"
+          }
+        },
+        "description": "Редактирование доступно только автору и только для draft. Передать текущую revision в If-Match. При 409 UI сохраняет несохранённые поля; автоматическая перезапись запрещена. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/RequestIfMatch"
+          }
+        ]
+      }
+    },
+    "/api/requests/{id}/publish": {
+      "post": {
+        "operationId": "publishRequest",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Опубликовать собственный черновик",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Атомарно проверяется лимит: не более трёх открытых заявок автора. Опубликованный вопрос доступен семь дней; актуальность состояния перепроверяется сервером. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyAction"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/requests/{id}/cancel": {
+      "post": {
+        "operationId": "cancelRequest",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Отменить собственную заявку",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Операция автора с проверкой текущего состояния; активный диалог завершается через /conversations/{id}/close.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyAction"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/requests/{id}/offers": {
+      "get": {
+        "operationId": "listRequestOffers",
+        "tags": [
+          "offers"
+        ],
+        "summary": "Прочитать доступные отклики",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OfferList"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Автор видит отклики на свой вопрос. Помощник видит только собственный; чужие отклики не раскрываются. Не более 100 откликов на заявку.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "createOffer",
+        "tags": [
+          "offers"
+        ],
+        "summary": "Добровольно предложить помощь",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Offer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Только для открытого чужого вопроса. Актуальная компетенция, доступность, ограничения пары и нагрузка проверяются повторно. Отклик не создаёт переписку. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OfferInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/offers/{id}/withdraw": {
+      "post": {
+        "operationId": "withdrawOffer",
+        "tags": [
+          "offers"
+        ],
+        "summary": "Отозвать собственный отклик",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Offer"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Доступно владельцу отклика с проверкой его текущего состояния.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyAction"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/offers/{id}/accept": {
+      "post": {
+        "operationId": "acceptOffer",
+        "tags": [
+          "offers"
+        ],
+        "summary": "Выбрать помощника и открыть диалог",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Только автор вопроса выбирает один актуальный отклик. Операция атомарно проверяет состояние вопроса, пару и нагрузку, создаёт единственный диалог, принимает выбранный отклик и отклоняет другие ожидающие отклики. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmptyAction"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/conversations": {
+      "get": {
+        "operationId": "listConversations",
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Список собственных диалогов",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConversationList"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "До 100 последних диалогов участника. Общего каталога чужих переписок нет. Пагинация списка диалогов пока не реализована."
+      }
+    },
+    "/api/conversations/{id}/messages": {
+      "get": {
+        "operationId": "listMessages",
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Получить очередную порцию сообщений",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MessagePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Только участники выбранной пары. Доступ к истории сохраняется после завершения и блокировки; новые сообщения при блокировке запрещены. Клиент опрашивает сервер раз в пять секунд только при открытом активном диалоге.",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/MessageAfter"
+          },
+          {
+            "$ref": "#/components/parameters/MessageLimit"
+          }
+        ]
+      },
+      "post": {
+        "operationId": "sendMessage",
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Сохранить сообщение приватного диалога",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Message"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Только участник активного незаблокированного диалога. clientMessageId обеспечивает повтор: прежний ID и текст возвращают тот же результат; иной текст с прежним ID — 409. Порядок sequence назначается под блокировкой строки диалога. Idempotency-Key здесь не используется. Current community rules must be explicitly accepted (403 RULES_ACCEPTANCE_REQUIRED); peer consent is checked for offers, selection and messages.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MessageInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          }
+        ]
+      }
+    },
+    "/api/conversations/{id}/close": {
+      "post": {
+        "operationId": "closeConversation",
+        "tags": [
+          "conversations"
+        ],
+        "summary": "Завершить диалог и сохранить результат",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Conversation"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Автор выбирает исход; помощнику доступен только no_result. helpful/partly_helpful означают resolved, остальные исходы — closed_unresolved. Закрытая история доступна участникам, отправка новых сообщений возвращает 409.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloseConversationInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/blocks": {
+      "post": {
+        "operationId": "blockUser",
+        "tags": [
+          "safety"
+        ],
+        "summary": "Заблокировать взаимодействия с другим участником",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ok"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Запрещает дальнейшее взаимодействие пары, отменяет ожидающие парные взаимодействия и закрывает активные диалоги без результата. История и возможность жалобы остаются доступны участникам. Снятие блокировки в текущий контракт не входит.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BlockInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/reports": {
+      "post": {
+        "operationId": "createReport",
+        "tags": [
+          "safety"
+        ],
+        "summary": "Сохранить приватную жалобу участника диалога",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успех.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportReceipt"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "409": {
+            "$ref": "#/components/responses/WorkflowError409"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        },
+        "description": "Допустимо и после блокировки. API возвращает только квитанцию о сохранении. Панель модерации, публичный список жалоб и автоматическое наказание не реализованы.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReportInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ]
+      }
+    },
+    "/api/requests/{id}/reach": {
+      "get": {
+        "operationId": "checkOwnRequestReach",
+        "tags": [
+          "requests"
+        ],
+        "summary": "Check availability for a saved own question without exposing helpers",
+        "description": "Owner only. Requires a session and pilot admission. Bounded advisory snapshot, no automatic relaxation or publication block. Limited to 6 checks per minute per account in each server process; general API limits also apply.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ResourceId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Advisory snapshot",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestReach"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "404": {
+            "$ref": "#/components/responses/WorkflowError404"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        }
+      }
+    },
+    "/api/notification-settings": {
+      "get": {
+        "operationId": "getNotificationSettings",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Own notification settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        }
+      },
+      "put": {
+        "operationId": "saveNotificationSettings",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "description": "Replace own preference. Global product notifications are off by default. Matching publications made before opt-in are not backfilled; enabling does not itself replay previous events. deliveryAvailable describes configuration, not verified worker health.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NotificationSettingsInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Own notification settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NotificationSettings"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/WorkflowError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/WorkflowError401"
+          },
+          "403": {
+            "$ref": "#/components/responses/WorkflowError403"
+          },
+          "429": {
+            "$ref": "#/components/responses/WorkflowError429"
+          },
+          "503": {
+            "$ref": "#/components/responses/WorkflowError503"
+          }
+        }
+      }
+    },
+    "/api/community-rules": {
+      "get": {
+        "operationId": "getCommunityRules",
+        "description": "",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityRules"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community-rules/status": {
+      "get": {
+        "operationId": "getRulesAcceptance",
+        "description": "",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityRulesStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/community-rules/accept": {
+      "post": {
+        "operationId": "acceptCommunityRules",
+        "description": "Explicit current-version acceptance; repeated acceptance preserves its timestamp. No auto-acceptance at login or migration.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityRulesStatus"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RulesAcceptanceInput"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/moderation/access": {
+      "get": {
+        "operationId": "getModerationAccess",
+        "description": "Capability of the authenticated real MAX account. Role comes only from server MODERATOR_MAX_IDS; pilot allowlist still applies.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationAccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/moderation/reports": {
+      "get": {
+        "operationId": "listModerationReports",
+        "description": "Moderator-only queue; 30 items per page. Cursor is an opaque decimal string.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationReportPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "new",
+                "resolved",
+                "all"
+              ],
+              "default": "new"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$"
+            }
+          }
+        ]
+      }
+    },
+    "/api/moderation/reports/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getModerationReport",
+        "description": "Audited report access; no unrelated conversations may be read through this endpoint.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationReportDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/moderation/reports/{id}/messages": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "readReportedConversation",
+        "description": "Explicit audited evidence read. Up to 30 messages ordered ascending, newest page first. Only the conversation attached to this report.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationMessagePage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "beforeSequence",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ]
+      }
+    },
+    "/api/moderation/reports/{id}/decision": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "decideModerationReport",
+        "description": "Required explanation and current revision. A reporter or reported user cannot decide their own case. block_pair restricts only this pair, not the entire account.",
+        "security": [
+          {
+            "opaqueBearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModerationReportDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Rules not accepted, moderator role required, or self-review forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Rules version / report revision / idempotency conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Request rejected",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ModerationDecisionInput"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "session": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Совместимый псевдоним opaqueBearer из v0.5; тот же HTTP Bearer протокол."
+      },
+      "opaqueBearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "opaque session token",
+        "description": "Случайный токен сессии, полученный от /api/auth/max или разрешённого локального /api/auth/demo. Это не JWT и не MAX_BOT_TOKEN. Истёкшая/отозванная сессия возвращает 401."
+      }
+    },
+    "schemas": {
+      "ProfileInput": {
+        "type": "object",
+        "required": [
+          "displayName",
+          "bio",
+          "availableToHelp",
+          "maxActiveConversations",
+          "competencies"
+        ],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "availableToHelp": {
+            "type": "boolean"
+          },
+          "maxActiveConversations": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "competencies": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "$ref": "#/components/schemas/CompetencyInput"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "Profile": {
+        "type": "object",
+        "required": [
+          "displayName",
+          "bio",
+          "availableToHelp",
+          "maxActiveConversations",
+          "competencies",
+          "id",
+          "revision",
+          "provenance"
+        ],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "availableToHelp": {
+            "type": "boolean"
+          },
+          "maxActiveConversations": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "competencies": {
+            "type": "array",
+            "maxItems": 30,
+            "items": {
+              "$ref": "#/components/schemas/Competency"
+            },
+            "description": "Редактируемые компетенции только по активным темам текущего каталога."
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "demo",
+              "self_declared"
+            ]
+          },
+          "archivedCompetencies": {
+            "type": "array",
+            "readOnly": true,
+            "description": "Сохранённый опыт по снятым темам; не отправляется в PUT /api/profile. Сохранение активных знаний не удаляет архив.",
+            "items": {
+              "$ref": "#/components/schemas/Competency"
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      "CompetencyInput": {
+        "type": "object",
+        "required": [
+          "topicId",
+          "facets",
+          "experienceKind",
+          "description",
+          "evidenceVisibility"
+        ],
+        "properties": {
+          "topicId": {
+            "type": "string"
+          },
+          "facets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "experienceKind": {
+            "type": "string",
+            "enum": [
+              "self_study",
+              "practice",
+              "teaching",
+              "participation"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "evidenceVisibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "participants"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidenceUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "maxLength": 8192
+          }
+        },
+        "additionalProperties": false
+      },
+      "Competency": {
+        "type": "object",
+        "required": [
+          "topicId",
+          "facets",
+          "experienceKind",
+          "description",
+          "evidenceVisibility",
+          "id",
+          "evidenceStatus",
+          "provenance"
+        ],
+        "properties": {
+          "topicId": {
+            "type": "string"
+          },
+          "facets": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "uniqueItems": true
+            }
+          },
+          "experienceKind": {
+            "type": "string",
+            "enum": [
+              "self_study",
+              "practice",
+              "teaching",
+              "participation"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "evidenceVisibility": {
+            "type": "string",
+            "enum": [
+              "private",
+              "participants"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidenceUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://",
+            "maxLength": 8192
+          },
+          "evidenceStatus": {
+            "type": "string",
+            "enum": [
+              "none",
+              "unreviewed"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "demo",
+              "self_declared"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message",
+              "requestId"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "requestId": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          }
+        }
+      },
+      "Facets": {
+        "type": "object",
+        "description": "Ключи и значения из актуального каталога, применимые к выбранной теме. Для обязательного признака достаточно одного общего значения; между обязательными признаками действует AND.",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "EmptyAction": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false,
+        "description": "Пустой JSON-объект для операции без входных полей."
+      },
+      "RequestInput": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "body": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 2000
+          },
+          "learningGoal": {
+            "type": "string",
+            "enum": [
+              "understand",
+              "practice",
+              "troubleshoot",
+              "learning_path"
+            ]
+          },
+          "attempt": {
+            "type": "string",
+            "maxLength": 1000,
+            "description": "Что уже пробовал автор; поле необязательно."
+          },
+          "topicId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "ID активной темы уровня L2 или глубже. L1 служит навигацией."
+          },
+          "facets": {
+            "$ref": "#/components/schemas/Facets"
+          },
+          "requiredFacets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true,
+            "description": "Ключи обязательных признаков; каждый должен присутствовать в facets и иметь непустой список значений."
+          },
+          "desiredExperience": {
+            "type": "string",
+            "enum": [
+              "self_study",
+              "practice",
+              "teaching",
+              "participation"
+            ],
+            "description": "Желаемый вид опыта влияет на балл; не подтверждает квалификацию."
+          },
+          "taxonomyVersion": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Точная версия GET /api/taxonomy. При несовместимой версии обновите каталог."
+          }
+        },
+        "required": [
+          "title",
+          "body",
+          "learningGoal",
+          "topicId",
+          "facets",
+          "requiredFacets",
+          "taxonomyVersion"
+        ],
+        "additionalProperties": false,
+        "description": "Только редактируемые поля заявки. authorId, status, revision и сведения о проверке нельзя задавать с клиента. Длины строк считаются по Unicode."
+      },
+      "RequestMatch": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "competencyId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "narrower": {
+            "type": "boolean",
+            "description": "Подходящая компетенция уже выбранной темы вопроса; UI должен показывать её границы."
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/MatchExplanation"
+          }
+        },
+        "required": [
+          "score",
+          "competencyId",
+          "topicId",
+          "narrower"
+        ],
+        "additionalProperties": false,
+        "description": "Лучшая цельная компетенция текущего помощника. Признаки разных записей знаний не объединяются."
+      },
+      "Request": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "authorName": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "body": {
+            "type": "string",
+            "minLength": 30,
+            "maxLength": 2000
+          },
+          "learningGoal": {
+            "type": "string",
+            "enum": [
+              "understand",
+              "practice",
+              "troubleshoot",
+              "learning_path"
+            ]
+          },
+          "attempt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 1000
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "facets": {
+            "$ref": "#/components/schemas/Facets"
+          },
+          "requiredFacets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "desiredExperience": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "self_study",
+              "practice",
+              "teaching",
+              "participation",
+              null
+            ]
+          },
+          "taxonomyVersion": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "open",
+              "in_progress",
+              "resolved",
+              "cancelled",
+              "expired",
+              "closed_unresolved"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "match": {
+            "$ref": "#/components/schemas/RequestMatch"
+          },
+          "myOffer": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Offer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conversationId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "authorId",
+          "authorName",
+          "title",
+          "body",
+          "learningGoal",
+          "attempt",
+          "topicId",
+          "facets",
+          "requiredFacets",
+          "desiredExperience",
+          "taxonomyVersion",
+          "status",
+          "revision",
+          "createdAt",
+          "updatedAt"
+        ],
+        "additionalProperties": false,
+        "description": "Владелец читает свою заявку во всех состояниях. Лента показывает подходящие открытые вопросы других участников. match, myOffer и conversationId зависят от контекста доступа."
+      },
+      "RequestPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Request"
+            },
+            "maxItems": 50
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Курсор следующей страницы: createdAt|UUID. Передавать без изменения с URL-кодированием; null — продолжения нет."
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "OfferInput": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "OfferCompetency": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "topicId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "experienceKind": {
+            "type": "string",
+            "enum": [
+              "self_study",
+              "practice",
+              "teaching",
+              "participation"
+            ]
+          },
+          "evidenceStatus": {
+            "type": "string",
+            "enum": [
+              "none",
+              "unreviewed"
+            ]
+          },
+          "provenance": {
+            "type": "string",
+            "enum": [
+              "demo",
+              "self_declared"
+            ]
+          },
+          "facets": {
+            "$ref": "#/components/schemas/Facets"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/MatchExplanation"
+          }
+        },
+        "required": [
+          "id",
+          "topicId",
+          "description",
+          "experienceKind",
+          "evidenceStatus",
+          "provenance"
+        ],
+        "additionalProperties": false,
+        "description": "Компетенция, на основании которой подан отклик. Ссылки на подтверждения не раскрываются, статус verified не выдаётся автоматически."
+      },
+      "Offer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "helperId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "helperName": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "accepted",
+              "declined",
+              "withdrawn"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "competency": {
+            "$ref": "#/components/schemas/OfferCompetency"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "narrower": {
+            "type": "boolean"
+          },
+          "explanation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchExplanation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Offer-time reasons; null for older offers without stored explanation. Acceptance rechecks eligibility but keeps the historical explanation."
+          }
+        },
+        "required": [
+          "id",
+          "requestId",
+          "helperId",
+          "helperName",
+          "message",
+          "status",
+          "createdAt",
+          "competency",
+          "score",
+          "narrower"
+        ],
+        "additionalProperties": false
+      },
+      "OfferList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Offer"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "description": "Автор видит отклики на свою заявку; помощник — только свой отклик. Пилот ограничивает число откликов на заявку сотней."
+      },
+      "Conversation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string"
+          },
+          "authorId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "helperId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "otherUserId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "otherDisplayName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "closed"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "closedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "outcome": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "helpful",
+              "partly_helpful",
+              "not_helpful",
+              "no_result",
+              null
+            ]
+          },
+          "comment": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "nextStep": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500,
+            "description": "Optional next learning action written by the question author. Visible only to the conversation participants."
+          },
+          "moderationClosed": {
+            "type": "boolean",
+            "description": "Conversation was closed as a safety action; no learning-result evaluation is implied."
+          }
+        },
+        "required": [
+          "id",
+          "requestId",
+          "title",
+          "authorId",
+          "helperId",
+          "otherUserId",
+          "otherDisplayName",
+          "status",
+          "createdAt",
+          "closedAt",
+          "outcome",
+          "comment"
+        ],
+        "additionalProperties": false,
+        "description": "Диалог автора и выбранного помощника. otherUserId/otherDisplayName вычисляются относительно текущего участника."
+      },
+      "ConversationList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Conversation"
+            },
+            "maxItems": 100
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "description": "До 100 последних диалогов текущего участника; постраничная навигация пока не предусмотрена."
+      },
+      "MessageInput": {
+        "type": "object",
+        "properties": {
+          "clientMessageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Создаётся клиентом один раз для конкретного сообщения и сохраняется при повторе после сетевой ошибки."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "Обычный текст; HTML не исполняется."
+          }
+        },
+        "required": [
+          "clientMessageId",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "conversationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "senderId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "senderName": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991,
+            "description": "Монотонный порядок сообщений внутри диалога."
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "clientMessageId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "id",
+          "conversationId",
+          "senderId",
+          "senderName",
+          "sequence",
+          "text",
+          "createdAt",
+          "clientMessageId"
+        ],
+        "additionalProperties": false
+      },
+      "MessagePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "maxItems": 100
+          },
+          "nextAfter": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Последний полученный sequence или исходный after для пустого результата; использовать в следующем запросе."
+          }
+        },
+        "required": [
+          "items",
+          "nextAfter"
+        ],
+        "additionalProperties": false
+      },
+      "CloseConversationInput": {
+        "type": "object",
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "helpful",
+              "partly_helpful",
+              "not_helpful",
+              "no_result"
+            ]
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "nextStep": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Only the question author may set a nonempty next step; helper cannot claim learning on behalf of the author."
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "additionalProperties": false,
+        "description": "Автор может выбрать любой исход. Помощник может завершить только с no_result. helpful/partly_helpful переводят заявку в resolved; остальные исходы — в closed_unresolved."
+      },
+      "BlockInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "userId"
+        ],
+        "additionalProperties": false,
+        "description": "ID другого участника. Запрещает дальнейшие взаимодействия пары и завершает активный диалог без результата; история и возможность жалобы сохраняются."
+      },
+      "Ok": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "required": [
+          "ok"
+        ],
+        "additionalProperties": false
+      },
+      "ReportInput": {
+        "type": "object",
+        "properties": {
+          "conversationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "abuse",
+              "spam",
+              "other"
+            ]
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "conversationId",
+          "category",
+          "text"
+        ],
+        "additionalProperties": false,
+        "description": "Жалобу может подать только участник указанного диалога, в том числе после блокировки. Не является публичным сообщением."
+      },
+      "ReportReceipt": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status"
+        ],
+        "additionalProperties": false,
+        "description": "Подтверждение сохранения жалобы. Панель модератора и срок рассмотрения в текущий этап не входят."
+      },
+      "MatchExplanation": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "topicRelation",
+          "matchedFacets",
+          "missingOptionalFacets",
+          "experience",
+          "basis"
+        ],
+        "properties": {
+          "topicRelation": {
+            "type": "string",
+            "enum": [
+              "exact",
+              "narrower"
+            ]
+          },
+          "matchedFacets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "missingOptionalFacets": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "experience": {
+            "type": "string",
+            "enum": [
+              "matched",
+              "different",
+              "not_requested"
+            ]
+          },
+          "basis": {
+            "type": "string",
+            "const": "self_declared"
+          }
+        },
+        "description": "Facts from one selected competency. Facet arrays contain catalog facet IDs. Topic relation and context fit do not verify competence or measure probability of a successful answer."
+      },
+      "RequestReach": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "requestId",
+          "requestRevision",
+          "status",
+          "sampleLimited",
+          "checkedAt",
+          "suggestions",
+          "parentTopicId"
+        ],
+        "properties": {
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "requestRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "available",
+              "no_match",
+              "limited"
+            ]
+          },
+          "sampleLimited": {
+            "type": "boolean"
+          },
+          "checkedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "suggestions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "enum": [
+                "add_attempt",
+                "review_required_facets",
+                "choose_parent_topic"
+              ]
+            }
+          },
+          "parentTopicId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "description": "Transient advisory result for the saved own request revision. available: at least one coherent eligible competency found in current snapshot. no_match: none in the full filtered snapshot. limited: no match in bounded sample, more rows exist. No helper IDs/names/counts; does not reserve a helper, notify anyone, publish or edit the question. Query loads at most 1000 competencies plus one sentinel; SQL work still depends on data size."
+      },
+      "NotificationSettings": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "botStarted",
+          "deliveryAvailable"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "botStarted": {
+            "type": "boolean"
+          },
+          "deliveryAvailable": {
+            "type": "boolean",
+            "description": "Server configuration permits product alerts. Does not prove worker is running or delivery succeeded."
+          }
+        }
+      },
+      "NotificationSettingsInput": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Topic": {
+        "type": "object",
+        "required": [
+          "id",
+          "parent_id",
+          "level",
+          "label",
+          "aliases",
+          "active"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "label": {
+            "type": "string"
+          },
+          "aliases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "active": {
+            "type": "boolean",
+            "description": "false: только история, исключается из выбора и нового подбора"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Facet": {
+        "type": "object",
+        "required": [
+          "id",
+          "label",
+          "applicable_topic_prefixes",
+          "values"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "applicable_topic_prefixes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "id",
+                "label"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "help": {
+            "type": "string"
+          },
+          "placeholder": {
+            "type": "string"
+          }
+        }
+      },
+      "CommunityRules": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "text"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "version",
+          "items"
+        ],
+        "additionalProperties": false
+      },
+      "CommunityRulesStatus": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          },
+          "accepted": {
+            "type": "boolean"
+          },
+          "acceptedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "version",
+          "accepted",
+          "acceptedAt"
+        ],
+        "additionalProperties": false
+      },
+      "RulesAcceptanceInput": {
+        "type": "object",
+        "properties": {
+          "version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "version"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationAccess": {
+        "type": "object",
+        "properties": {
+          "canModerate": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "canModerate"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationReport": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "resolved"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "abuse",
+              "spam",
+              "other"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reporterName": {
+            "type": "string"
+          },
+          "targetName": {
+            "type": "string"
+          },
+          "requestTitle": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "dismiss",
+              "close_conversation",
+              "block_pair",
+              null
+            ]
+          },
+          "resolvedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "revision",
+          "category",
+          "createdAt",
+          "reporterName",
+          "targetName",
+          "requestTitle",
+          "resolution",
+          "resolvedAt"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationReportDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "new",
+              "resolved"
+            ]
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "abuse",
+              "spam",
+              "other"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reporterName": {
+            "type": "string"
+          },
+          "targetName": {
+            "type": "string"
+          },
+          "requestTitle": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "dismiss",
+              "close_conversation",
+              "block_pair",
+              null
+            ]
+          },
+          "resolvedAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "text": {
+            "type": "string"
+          },
+          "conversationId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "conversationStatus": {
+            "type": "string",
+            "enum": [
+              "active",
+              "closed"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "revision",
+          "category",
+          "createdAt",
+          "reporterName",
+          "targetName",
+          "requestTitle",
+          "resolution",
+          "resolvedAt",
+          "text",
+          "conversationId",
+          "conversationStatus",
+          "note"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationReportPage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ModerationReport"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationMessagePage": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "sequence": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "senderName": {
+                  "type": "string"
+                },
+                "text": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "sequence",
+                "senderName",
+                "text",
+                "createdAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "nextBeforeSequence": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          }
+        },
+        "required": [
+          "items",
+          "nextBeforeSequence"
+        ],
+        "additionalProperties": false
+      },
+      "ModerationDecisionInput": {
+        "type": "object",
+        "properties": {
+          "expectedRevision": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "dismiss",
+              "close_conversation",
+              "block_pair"
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "expectedRevision",
+          "decision",
+          "note"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "parameters": {
+      "ResourceId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "UUID ресурса; неверный формат отклоняется до SQL.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": "UUID одной пользовательской операции. При сетевом повторе сохранять тот же ключ и тело. Область уникальности: пользователь + HTTP-метод + маршрут + ключ. Иное тело с прежним ключом — 409; права и состояние повторно проверяются."
+      },
+      "RequestIfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "pattern": "^\"[0-9]+\"$"
+        },
+        "description": "revision из последней прочитанной заявки в двойных кавычках, например \"0\". Отсутствие — 428, конфликт версии — 409; черновик клиента необходимо сохранить."
+      },
+      "RequestScope": {
+        "name": "scope",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "mine",
+            "feed"
+          ],
+          "default": "mine"
+        },
+        "description": "mine — собственные заявки; feed — открытые вопросы, которым соответствуют актуальные знания и доступность текущего помощника."
+      },
+      "RequestCursor": {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Значение nextCursor предыдущего ответа (createdAt|UUID), URL-кодированное. Курсорная навигация, без OFFSET."
+      },
+      "RequestLimit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50,
+          "default": 20
+        }
+      },
+      "MessageAfter": {
+        "name": "after",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991,
+          "default": 0
+        },
+        "description": "Получить сообщения со sequence строго больше after. Передавать nextAfter предыдущего ответа."
+      },
+      "MessageLimit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 50
+        }
+      }
+    },
+    "responses": {
+      "WorkflowError400": {
+        "description": "Неверные поля, UUID, параметры, обязательный заголовок Idempotency-Key или неактуальный/недопустимый выбор каталога.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError401": {
+        "description": "Нужна действующая непрозрачная сессия; вход следует повторить.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError403": {
+        "description": "Операция запрещена: блокировка пары или недостаточные права на действие.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError404": {
+        "description": "Ресурс не найден либо приватный ресурс недоступен текущему пользователю.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError409": {
+        "description": "Конфликт состояния/версии, занятая ёмкость, лимит открытых заявок/откликов, изменённое тело при прежнем ключе повтора или закрытый диалог.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError428": {
+        "description": "Не передан обязательный If-Match при редактировании черновика.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError429": {
+        "description": "Превышен лимит частоты запросов.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "WorkflowError503": {
+        "description": "База или временно необходимая зависимость недоступна; результат операции не следует считать подтверждённым.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "requests"
+    },
+    {
+      "name": "offers"
+    },
+    {
+      "name": "conversations"
+    },
+    {
+      "name": "safety"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# For Caddy installed on the same Linux host as Docker.
+# Replace this hostname with the HTTPS origin registered for the mini app.
+pilot.example.org {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8085
+}

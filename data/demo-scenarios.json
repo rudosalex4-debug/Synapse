@@ -1,0 +1,94 @@
+{
+  "status": "synthetic_design_examples_not_runtime_seed",
+  "contains_real_people": false,
+  "taxonomy_version": "2026-09-25.1",
+  "purpose": "Два направления и смена ролей. Примеры не подтверждают существование программы в указанном вузе или текущей стажировки. В базе автоматически не создаются.",
+  "profiles": [
+    {
+      "logical_id": "A",
+      "description": "Анна проходила отбор на стажировку; спрашивает о выборе университетской программы.",
+      "competencies": [
+        {
+          "topic_id": "career.internships.selection",
+          "facets": {
+            "company": [
+              "yandex"
+            ],
+            "specialty": [
+              "informatics"
+            ]
+          },
+          "experience_kind": "participation",
+          "provenance": "demo",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "B",
+      "description": "Борис знаком с выбором университетской программы; готовится к стажировке.",
+      "competencies": [
+        {
+          "topic_id": "pathways.admissions.program_choice",
+          "facets": {
+            "organization": [
+              "itmo"
+            ],
+            "education_program": [
+              "software_engineering"
+            ],
+            "study_level": [
+              "bachelor"
+            ]
+          },
+          "experience_kind": "participation",
+          "provenance": "demo",
+          "evidence_status": "none"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "author": "A",
+      "topic_id": "pathways.admissions.program_choice",
+      "facets": {
+        "organization": [
+          "itmo"
+        ],
+        "education_program": [
+          "software_engineering"
+        ],
+        "study_level": [
+          "bachelor"
+        ]
+      },
+      "required_facets": [
+        "organization"
+      ],
+      "title": "Как понять содержание университетской программы?",
+      "body": "Сравниваю программы и хочу понять, какие вопросы задать студенту о проектах, нагрузке и выборе дисциплин. По каким признакам оценивать содержание обучения?",
+      "expected_helper": "B",
+      "next_step": "Составить вопросы о проектах и дисциплинах и сверить ответы с описанием программы."
+    },
+    {
+      "author": "B",
+      "topic_id": "career.internships.selection",
+      "facets": {
+        "company": [
+          "yandex"
+        ],
+        "specialty": [
+          "informatics"
+        ]
+      },
+      "required_facets": [
+        "company"
+      ],
+      "title": "Как подготовиться к отбору на стажировку?",
+      "body": "Есть учебный проект, но нет рабочего опыта. Хочу понять, как описать вклад и подготовиться к обсуждению проекта на собеседовании. На что обратить внимание?",
+      "expected_helper": "A",
+      "next_step": "Подготовить описание своего вклада и потренироваться отвечать на вопросы о проекте."
+    }
+  ]
+}

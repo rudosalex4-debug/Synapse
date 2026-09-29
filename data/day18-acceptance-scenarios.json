@@ -1,0 +1,180 @@
+{
+  "status": "synthetic_acceptance_data",
+  "catalogVersion": "2026-09-18.1",
+  "note": "Вымышленные сценарии проверки модели. Вопросы пока не отправляются: P09/P10 не реализованы. Это не интервью и не данные пилота.",
+  "scenarios": [
+    {
+      "id": "school-language",
+      "audience": "school",
+      "profile": {
+        "displayName": "Ученик: английский",
+        "bio": "Синтетический пример: могу помогать и сам задавать вопросы.",
+        "availableToHelp": true,
+        "maxActiveConversations": 2,
+        "competencies": [
+          {
+            "topicId": "languages.english.tenses",
+            "facets": {
+              "learner_level": [
+                "beginner"
+              ],
+              "response_language": [
+                "ru"
+              ]
+            },
+            "experienceKind": "practice",
+            "description": "Объясняю времена на простых примерах.",
+            "evidenceVisibility": "private"
+          }
+        ]
+      },
+      "question": {
+        "text": "Как связаны выдержка и диафрагма?",
+        "topicId": "practical.photography.exposure",
+        "facets": {},
+        "expectedHelper": "worker-practical"
+      }
+    },
+    {
+      "id": "worker-science",
+      "audience": "worker",
+      "profile": {
+        "displayName": "Специалист: математика",
+        "bio": "Синтетический пример: могу помогать и сам задавать вопросы.",
+        "availableToHelp": true,
+        "maxActiveConversations": 2,
+        "competencies": [
+          {
+            "topicId": "science.math.percentages",
+            "facets": {
+              "learner_level": [
+                "beginner"
+              ]
+            },
+            "experienceKind": "practice",
+            "description": "Помогаю разобраться с процентами.",
+            "evidenceVisibility": "private"
+          }
+        ]
+      },
+      "question": {
+        "text": "Как собрать итоги расходов сводной таблицей?",
+        "topicId": "digital.spreadsheets.pivot_tables",
+        "facets": {
+          "tool": [
+            "excel"
+          ]
+        },
+        "expectedHelper": "student-digital"
+      }
+    },
+    {
+      "id": "student-digital",
+      "audience": "student",
+      "profile": {
+        "displayName": "Студент: таблицы",
+        "bio": "Синтетический пример: могу помогать и сам задавать вопросы.",
+        "availableToHelp": true,
+        "maxActiveConversations": 2,
+        "competencies": [
+          {
+            "topicId": "digital.spreadsheets.pivot_tables",
+            "facets": {
+              "tool": [
+                "excel"
+              ],
+              "tool_version": [
+                "microsoft_365"
+              ]
+            },
+            "experienceKind": "practice",
+            "description": "Объясняю группировку и сводные таблицы.",
+            "evidenceVisibility": "private"
+          }
+        ]
+      },
+      "question": {
+        "text": "Когда выбирать Past Simple и Present Perfect?",
+        "topicId": "languages.english.tenses",
+        "facets": {
+          "learner_level": [
+            "beginner"
+          ]
+        },
+        "expectedHelper": "school-language"
+      }
+    },
+    {
+      "id": "worker-practical",
+      "audience": "worker",
+      "profile": {
+        "displayName": "Специалист: фотография",
+        "bio": "Синтетический пример: могу помогать и сам задавать вопросы.",
+        "availableToHelp": true,
+        "maxActiveConversations": 2,
+        "competencies": [
+          {
+            "topicId": "practical.photography.exposure",
+            "facets": {
+              "learner_level": [
+                "beginner"
+              ]
+            },
+            "experienceKind": "practice",
+            "description": "Объясняю устройство экспозиции.",
+            "evidenceVisibility": "private"
+          }
+        ]
+      },
+      "question": {
+        "text": "Как разобраться в этапах подготовки заявления?",
+        "topicId": "pathways.admissions.application",
+        "facets": {
+          "organization": [
+            "mephi"
+          ],
+          "admission_route": [
+            "general"
+          ]
+        },
+        "expectedHelper": "student-pathways"
+      }
+    },
+    {
+      "id": "student-pathways",
+      "audience": "student",
+      "profile": {
+        "displayName": "Студент: образовательный путь",
+        "bio": "Синтетический пример: могу помогать и сам задавать вопросы.",
+        "availableToHelp": true,
+        "maxActiveConversations": 2,
+        "competencies": [
+          {
+            "topicId": "pathways.admissions.application",
+            "facets": {
+              "organization": [
+                "mephi"
+              ],
+              "admission_route": [
+                "general"
+              ]
+            },
+            "experienceKind": "practice",
+            "description": "Делюсь личным опытом подготовки документов.",
+            "evidenceVisibility": "private"
+          }
+        ]
+      },
+      "question": {
+        "text": "Почему скидки 10% и 20% подряд не дают 30%?",
+        "topicId": "science.math.percentages",
+        "facets": {
+          "learner_level": [
+            "beginner"
+          ]
+        },
+        "expectedHelper": "worker-science"
+      }
+    }
+  ]
+}

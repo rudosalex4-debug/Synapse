@@ -1,0 +1,355 @@
+{
+  "status": "synthetic_design_examples_not_runtime_seed",
+  "contains_real_people": false,
+  "taxonomy_version": "2026-09-16.3",
+  "profiles": [
+    {
+      "logical_id": "A",
+      "description": "Знает английский; спрашивает о таблицах",
+      "competencies": [
+        {
+          "logical_id": "a_english",
+          "topic_id": "languages.english.tenses",
+          "facets": {
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "self_study",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "B",
+      "description": "Знает сводные Excel; спрашивает об английском",
+      "competencies": [
+        {
+          "logical_id": "b_pivot",
+          "topic_id": "digital.spreadsheets.pivot_tables",
+          "facets": {
+            "tool": [
+              "excel"
+            ],
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "C",
+      "description": "Объясняет математику; посторонний к разговору A–B",
+      "competencies": [
+        {
+          "logical_id": "c_math",
+          "topic_id": "science.math.percentages",
+          "facets": {
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "teaching",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "D",
+      "description": "Сводные в другом инструменте",
+      "competencies": [
+        {
+          "logical_id": "d_pivot",
+          "topic_id": "digital.spreadsheets.pivot_tables",
+          "facets": {
+            "tool": [
+              "google_sheets"
+            ],
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "E",
+      "description": "Только широкая компетенция таблиц",
+      "competencies": [
+        {
+          "logical_id": "e_broad",
+          "topic_id": "digital.spreadsheets",
+          "facets": {
+            "tool": [
+              "excel"
+            ],
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "F",
+      "description": "Контексты двух компетенций нельзя склеивать",
+      "competencies": [
+        {
+          "logical_id": "f_excel_broad",
+          "topic_id": "digital.spreadsheets",
+          "facets": {
+            "tool": [
+              "excel"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        },
+        {
+          "logical_id": "f_pivot_other",
+          "topic_id": "digital.spreadsheets.pivot_tables",
+          "facets": {
+            "tool": [
+              "google_sheets"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": null,
+          "evidence_visibility": "private",
+          "evidence_status": "none"
+        }
+      ]
+    },
+    {
+      "logical_id": "G",
+      "description": "Механизмы велосипеда; не общая услуга ремонта",
+      "competencies": [
+        {
+          "logical_id": "g_mechanism",
+          "topic_id": "practical.mechanisms.gear_ratio",
+          "facets": {
+            "mechanism_type": [
+              "bicycle"
+            ],
+            "learner_level": [
+              "beginner"
+            ],
+            "response_language": [
+              "ru"
+            ]
+          },
+          "experience_kind": "practice",
+          "provenance": "demo",
+          "evidence_url": "https://example.invalid/gears-demo",
+          "evidence_visibility": "private",
+          "evidence_status": "unreviewed"
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "logical_id": "request_excel",
+      "author": "A",
+      "title": "Как устроить сводную таблицу расходов?",
+      "body": "У меня есть строки расходов с категориями. Хочу понять, как получить сумму по категориям и почему исходная таблица должна быть устроена определённым образом.",
+      "learning_goal": "practice",
+      "attempt": null,
+      "topic_id": "digital.spreadsheets.pivot_tables",
+      "facets": {
+        "tool": [
+          "excel"
+        ],
+        "learner_level": [
+          "beginner"
+        ],
+        "response_language": [
+          "ru"
+        ]
+      },
+      "required_facets": [
+        "tool"
+      ],
+      "taxonomy_version": "2026-09-16.3"
+    },
+    {
+      "logical_id": "request_english",
+      "author": "B",
+      "title": "Present Perfect и Past Simple",
+      "body": "Хочу разобраться, почему в двух похожих предложениях используются разные времена, и научиться выбирать время самостоятельно.",
+      "learning_goal": "understand",
+      "attempt": null,
+      "topic_id": "languages.english.tenses",
+      "facets": {
+        "learner_level": [
+          "beginner"
+        ],
+        "response_language": [
+          "ru"
+        ]
+      },
+      "required_facets": [
+        "response_language"
+      ],
+      "taxonomy_version": "2026-09-16.3"
+    },
+    {
+      "logical_id": "request_math",
+      "author": "A",
+      "title": "Почему проценты не возвращают исходную сумму?",
+      "body": "Хочу понять на числовом примере результат увеличения на 20 процентов, а затем уменьшения на 20 процентов.",
+      "learning_goal": "understand",
+      "attempt": null,
+      "topic_id": "science.math.percentages",
+      "facets": {
+        "learner_level": [
+          "beginner"
+        ],
+        "response_language": [
+          "ru"
+        ]
+      },
+      "required_facets": [],
+      "taxonomy_version": "2026-09-16.3"
+    },
+    {
+      "logical_id": "request_mechanism",
+      "author": "C",
+      "title": "Передаточное отношение велосипеда",
+      "body": "Хочу понять связь размеров звёзд велосипеда с числом оборотов колеса и усилием при движении.",
+      "learning_goal": "understand",
+      "attempt": null,
+      "topic_id": "practical.mechanisms.gear_ratio",
+      "facets": {
+        "mechanism_type": [
+          "bicycle"
+        ],
+        "learner_level": [
+          "beginner"
+        ],
+        "response_language": [
+          "ru"
+        ]
+      },
+      "required_facets": [
+        "mechanism_type"
+      ],
+      "taxonomy_version": "2026-09-16.3"
+    }
+  ],
+  "matching_expectations": [
+    {
+      "request": "request_excel",
+      "helper": "B",
+      "expected": "eligible",
+      "score": 100,
+      "reason": "Одна целая компетенция: сводные + Excel"
+    },
+    {
+      "request": "request_excel",
+      "helper": "D",
+      "expected": "excluded",
+      "reason": "Обязательный инструмент не совпадает"
+    },
+    {
+      "request": "request_excel",
+      "helper": "E",
+      "expected": "excluded",
+      "reason": "Родительская компетенция не подтверждает узкий навык"
+    },
+    {
+      "request": "request_excel",
+      "helper": "F",
+      "expected": "excluded",
+      "reason": "Нельзя собрать Excel и сводные из разных записей"
+    },
+    {
+      "request": "request_english",
+      "helper": "A",
+      "expected": "eligible",
+      "score": 100,
+      "reason": "Смена ролей тех же аккаунтов"
+    },
+    {
+      "request": "request_math",
+      "helper": "C",
+      "expected": "eligible",
+      "score": 100,
+      "reason": "Третья область"
+    },
+    {
+      "request": "request_mechanism",
+      "helper": "G",
+      "expected": "eligible",
+      "score": 100,
+      "reason": "Повседневная образовательная задача о механизме"
+    }
+  ],
+  "trust_case": {
+    "competency": {
+      "logical_id": "evidence_demo",
+      "topic_id": "languages.english.tenses",
+      "facets": {},
+      "experience_kind": "self_study",
+      "provenance": "demo",
+      "evidence_url": "https://example.invalid/demo-evidence",
+      "evidence_visibility": "private",
+      "evidence_status": "unreviewed"
+    },
+    "expected": "unreviewed_private_no_score_bonus",
+    "source": "Вымышленная ссылка; не загружать и не выдавать за диплом"
+  },
+  "role_reversal": {
+    "first_request": "request_excel",
+    "first_author": "A",
+    "first_helper": "B",
+    "second_request": "request_english",
+    "second_author": "B",
+    "second_helper": "A"
+  },
+  "additional_roles": [
+    "M_moderator_by_report_only"
+  ],
+  "external_integration_status": "not_connected"
+}

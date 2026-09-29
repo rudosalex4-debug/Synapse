@@ -1,0 +1,139 @@
+# Standalone MAX release; historical project name/volume are preserved.
+# Never combine with compose.yaml/demo data. Set PILOT_MODE=true only for a closed pilot.
+name: synapse-pilot
+
+x-pilot-env: &pilot-env
+  APP_ENV: production
+  PORT: "8080"
+  DATABASE_URL: postgresql://pilot:${POSTGRES_PASSWORD:?Generate .env.pilot.local first}@db:5432/synapse_pilot
+  APP_PUBLIC_URL: ${APP_PUBLIC_URL:?Set the public HTTPS origin}
+  DEMO_MODE: "false"
+  PILOT_MODE: ${PILOT_MODE:-false}
+  PILOT_ALLOWED_MAX_IDS: ${PILOT_ALLOWED_MAX_IDS:-}
+  MODERATOR_MAX_IDS: ${MODERATOR_MAX_IDS:-}
+  MAX_BOT_TOKEN: ${MAX_BOT_TOKEN:?Provide the bot token in the ignored local env file}
+  MAX_BOT_USERNAME: ${MAX_BOT_USERNAME:?Set the confirmed bot username}
+  MAX_WEBHOOK_SECRET: ${MAX_WEBHOOK_SECRET:?Generate a random webhook secret}
+  MAX_API_BASE_URL: https://platform-api2.max.ru
+  MAX_CA_FILE: /run/max-ca.pem
+  MAX_DELIVERY_ENABLED: "false"
+  MAX_PRODUCT_NOTIFICATIONS_ENABLED: ${MAX_PRODUCT_NOTIFICATIONS_ENABLED:-false}
+  AUTH_MAX_AGE_SECONDS: "3600"
+  SESSION_TTL_SECONDS: "3600"
+  DATA_DIR: /app/data
+  MIGRATIONS_DIR: /app/db/migrations
+  STATIC_DIR: /app/miniapp
+
+x-pilot-app: &pilot-app
+  image: synapse:pilot
+  init: true
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  environment: *pilot-env
+  volumes:
+    - type: bind
+      source: ${PILOT_MAX_CA_FILE:-./private/max-ca.pem}
+      target: /run/max-ca.pem
+      read_only: true
+      bind:
+        create_host_path: false
+
+services:
+  # On-demand CLI only: uses exactly the same credentials and CA as the app.
+  # No .env bind mount, no database dependency, no published ports.
+  tools:
+    image: node:24-bookworm-slim
+    profiles: [tools]
+    init: true
+    restart: "no"
+    read_only: true
+    working_dir: /work
+    user: "10001:10001"
+    entrypoint: ["node", "/work/scripts/max-setup.mjs"]
+    environment: *pilot-env
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    volumes:
+      - type: bind
+        source: ./scripts
+        target: /work/scripts
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${PILOT_MAX_CA_FILE:-./private/max-ca.pem}
+        target: /run/max-ca.pem
+        read_only: true
+        bind:
+          create_host_path: false
+
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: synapse_pilot
+      POSTGRES_USER: pilot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Generate .env.pilot.local first}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pilot -d synapse_pilot"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  init:
+    <<: *pilot-app
+    restart: "no"
+    command: ["sh", "/app/infra/init-db.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    <<: *pilot-app
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+    command: ["/app/bin/max-help", "serve"]
+    ports:
+      - "127.0.0.1:${PILOT_PORT:-8085}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--max-time", "4", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  # Explicitly opt into real MAX replies after registering the HTTPS webhook.
+  worker:
+    <<: *pilot-app
+    profiles: [bot]
+    command: ["/app/bin/max-help", "worker"]
+    environment:
+      <<: *pilot-env
+      MAX_DELIVERY_ENABLED: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:

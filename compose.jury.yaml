@@ -1,0 +1,93 @@
+# Standalone local jury demo. Never combine with the production/pilot Compose.
+name: synapse-jury
+
+x-app: &app
+  image: synapse:jury
+  init: true
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  environment:
+    APP_ENV: development
+    PORT: "8080"
+    DATABASE_URL: postgresql://app:local-development-only@db:5432/max_help
+    APP_PUBLIC_URL: http://127.0.0.1:${JURY_PORT:-18080}
+    DEMO_MODE: "true"
+    PILOT_MODE: "false"
+    PILOT_ALLOWED_MAX_IDS: ""
+    MODERATOR_MAX_IDS: ""
+    MAX_BOT_TOKEN: ""
+    MAX_DELIVERY_ENABLED: "false"
+    MAX_PRODUCT_NOTIFICATIONS_ENABLED: "false"
+    MAX_BOT_USERNAME: ""
+    MAX_WEBHOOK_SECRET: jury-local-only
+    MAX_API_BASE_URL: https://platform-api2.max.ru
+    AUTH_MAX_AGE_SECONDS: "3600"
+    SESSION_TTL_SECONDS: "3600"
+    DATA_DIR: /app/data
+    MIGRATIONS_DIR: /app/db/migrations
+    STATIC_DIR: /app/miniapp
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: max_help
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: local-development-only
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app -d max_help"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  init:
+    <<: *app
+    restart: "no"
+    command: ["sh", "/app/infra/init-db.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    <<: *app
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      args:
+        RUN_TESTS: "false"
+    command: ["/app/bin/max-help", "serve"]
+    ports:
+      - "127.0.0.1:${JURY_PORT:-18080}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--max-time", "4", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
+  worker:
+    <<: *app
+    command: ["/app/bin/max-help", "worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+
+volumes:
+  postgres_data:

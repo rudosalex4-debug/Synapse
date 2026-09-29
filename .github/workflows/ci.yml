@@ -1,0 +1,77 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      MAX_BOT_TOKEN: ""
+      MAX_BOT_USERNAME: ""
+      DEMO_MODE: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.19.0
+      - name: Install locked frontend dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Frontend types, tests and build
+        run: pnpm check
+      - name: Check synthetic catalog scenarios
+        run: node scripts/check-catalog-scenarios.mjs
+      - name: Validate local Compose
+        run: docker compose config --quiet
+      - name: Build native backend and runtime image (includes CTest)
+        run: docker compose build backend
+      - name: Isolated MAX auth, catalog readiness and five-domain profile integration
+        run: node scripts/auth-integration-test.mjs
+      - name: Isolated request, matching, offer and conversation integration
+        run: node scripts/workflow-integration-test.mjs
+      - name: Bot forms and mini-app share one authenticated workflow
+        env:
+          SYNAPSE_TEST_IMAGE: synapse:local
+        run: node scripts/bot-mini-integration-test.mjs
+      - name: Upgrade both historical database branches
+        env:
+          SYNAPSE_TEST_IMAGE: synapse:local
+        run: bash scripts/migration-upgrade-test.sh
+      - name: Start PostgreSQL, migrate, seed, API and worker
+        run: docker compose up --no-build --wait --wait-timeout 120
+      - name: Local health, contract and static app smoke checks
+        run: node scripts/smoke.mjs
+      - name: HTTP and database integration checks
+        run: node scripts/integration-test.mjs
+      - name: Durable queue state and simulated MAX transport
+        run: |
+          docker compose stop worker
+          docker compose run --rm --no-deps backend /app/bin/queue-tests
+          docker compose run --rm --no-deps backend /app/bin/bot-workflow-tests
+          docker compose start worker
+      - name: Repeat migrations and seed
+        run: docker compose run --rm init
+      - name: Keep API ready after repeated initialization
+        run: node scripts/smoke.mjs
+      - name: Database outage and process restart recovery
+        run: node scripts/restart-test.mjs
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs --no-color --tail=100 init backend worker db
+      - name: Stop test stack and remove disposable CI data
+        if: always()
+        run: docker compose down --volumes --remove-orphans

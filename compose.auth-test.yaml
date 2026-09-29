@@ -1,0 +1,101 @@
+# Standalone, disposable authentication test stack. Never combine with compose.yaml.
+# Build synapse:local with the main Compose file before running the Node test script.
+name: synapse-auth-test
+
+x-auth-environment: &auth-environment
+  APP_ENV: production
+  PORT: "8080"
+  DATABASE_URL: postgresql://auth_test:auth-test-only-password@db:5432/synapse_auth_test
+  APP_PUBLIC_URL: https://example.invalid
+  DEMO_MODE: "false"
+  MAX_BOT_TOKEN: local-test-token-not-a-real-bot-token
+  MAX_BOT_USERNAME: ""
+  MAX_DELIVERY_ENABLED: "false"
+  MAX_WEBHOOK_SECRET: auth-test-only-secret-at-least-32-characters
+  MAX_API_BASE_URL: https://example.invalid
+  AUTH_MAX_AGE_SECONDS: "3600"
+  SESSION_TTL_SECONDS: "3600"
+  DATA_DIR: /app/data
+  MIGRATIONS_DIR: /app/db/migrations
+  STATIC_DIR: /app/miniapp
+
+x-auth-app: &auth-app
+  image: ${SYNAPSE_TEST_IMAGE:-synapse:local}
+  pull_policy: never
+  init: true
+  restart: "no"
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  environment: *auth-environment
+
+x-api: &api
+  <<: *auth-app
+  command: ["/app/bin/max-help", "serve"]
+  depends_on:
+    db:
+      condition: service_healthy
+    init:
+      condition: service_completed_successfully
+  healthcheck:
+    test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--max-time", "4", "http://127.0.0.1:8080/health/ready"]
+    interval: 2s
+    timeout: 5s
+    retries: 30
+    start_period: 5s
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: "no"
+    environment:
+      POSTGRES_DB: synapse_auth_test
+      POSTGRES_USER: auth_test
+      POSTGRES_PASSWORD: auth-test-only-password
+    volumes:
+      - auth_test_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_test -d synapse_auth_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  init:
+    <<: *auth-app
+    command: ["sh", "/app/infra/init-db.sh"]
+    environment:
+      <<: *auth-environment
+      APP_ENV: test
+      DEMO_MODE: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *api
+    ports:
+      - "127.0.0.1:8082:8080"
+
+  # Issues a real demo session in the isolated database so api can reject it.
+  demo-fixture:
+    <<: *api
+    environment:
+      <<: *auth-environment
+      APP_ENV: test
+      DEMO_MODE: "true"
+    ports:
+      - "127.0.0.1:8083:8080"
+
+# No worker exists; MAX uses a reserved .invalid address. Test HTTP stays on loopback.
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  auth_test_postgres:
+    name: synapse-auth-test-postgres

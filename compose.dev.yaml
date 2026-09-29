@@ -1,0 +1,29 @@
+# Optional hot-reload UI. Use together with compose.yaml.
+services:
+  miniapp-dev:
+    image: synapse-frontend-dev:local
+    build:
+      context: .
+      dockerfile: infra/Dockerfile
+      target: frontend-deps
+    init: true
+    working_dir: /src
+    command: ["sh", "-c", "pnpm install --frozen-lockfile && pnpm --filter @max-help/miniapp exec vite --host 0.0.0.0"]
+    ports:
+      - "127.0.0.1:5173:5173"
+    environment:
+      API_PROXY_TARGET: http://backend:8080
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/src
+      - dev_root_modules:/src/node_modules
+      - dev_app_modules:/src/apps/miniapp/node_modules
+      - dev_contract_modules:/src/packages/contracts/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  dev_root_modules:
+  dev_app_modules:
+  dev_contract_modules:

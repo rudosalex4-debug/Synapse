@@ -1,0 +1,95 @@
+# Standalone, disposable bot + mini HTTP acceptance stack.
+# Never combine this file with compose.yaml or any pilot environment file.
+name: synapse-bot-mini-test
+
+x-test-environment: &test-environment
+  APP_ENV: production
+  PORT: "8080"
+  DATABASE_URL: postgresql://bot_mini_test:bot-mini-test-only-password@db:5432/synapse_bot_mini_test
+  APP_PUBLIC_URL: https://example.invalid
+  DEMO_MODE: "false"
+  PILOT_MODE: "false"
+  MAX_BOT_TOKEN: local-test-token-not-a-real-bot-token
+  MAX_BOT_USERNAME: synthetic_bot
+  MAX_WEBHOOK_SECRET: bot-mini-test-only-secret-at-least-32-characters
+  MAX_API_BASE_URL: https://example.invalid
+  MAX_DELIVERY_ENABLED: "false"
+  MAX_PRODUCT_NOTIFICATIONS_ENABLED: "true"
+  AUTH_MAX_AGE_SECONDS: "3600"
+  SESSION_TTL_SECONDS: "3600"
+  DATA_DIR: /app/data
+  MIGRATIONS_DIR: /app/db/migrations
+  STATIC_DIR: /app/miniapp
+
+x-test-app: &test-app
+  image: ${SYNAPSE_TEST_IMAGE:-synapse:day23-check}
+  pull_policy: never
+  init: true
+  restart: "no"
+  read_only: true
+  tmpfs:
+    - /tmp:size=32m,mode=1777
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+  environment: *test-environment
+
+services:
+  db:
+    image: postgres:17-bookworm
+    restart: "no"
+    environment:
+      POSTGRES_DB: synapse_bot_mini_test
+      POSTGRES_USER: bot_mini_test
+      POSTGRES_PASSWORD: bot-mini-test-only-password
+    volumes:
+      - bot_mini_test_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bot_mini_test -d synapse_bot_mini_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  init:
+    <<: *test-app
+    command: ["sh", "/app/infra/init-db.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    <<: *test-app
+    command: ["/app/bin/max-help", "serve"]
+    ports:
+      - "127.0.0.1:8086:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "--max-time", "4", "http://127.0.0.1:8080/health/ready"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+
+  # Processes verified synthetic inbox events; MAX delivery remains disabled.
+  worker:
+    <<: *test-app
+    command: ["/app/bin/max-help", "worker"]
+    depends_on:
+      db:
+        condition: service_healthy
+      init:
+        condition: service_completed_successfully
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  bot_mini_test_postgres:
+    name: synapse-bot-mini-test-postgres
