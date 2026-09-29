@@ -3,10 +3,25 @@ import type { Profile, ProfileInput } from './types';
 export class ApiError extends Error {
   constructor(public readonly status: number, public readonly code: string, public readonly safeMessage?: string) { super(code); }
 }
-export async function api<T>(path: string, options: { token?: string; body?: unknown; method?: string; revision?: number; idempotencyKey?: string } = {}): Promise<T> {
+function requestAborted(): Error {
+  const error = new Error('Request aborted');
+  error.name = 'AbortError';
+  return error;
+}
+export async function api<T>(path: string, options: { token?: string; body?: unknown; method?: string; revision?: number; idempotencyKey?: string; signal?: AbortSignal } = {}): Promise<T> {
+  if (options.signal?.aborted) throw requestAborted();
   const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 15_000);
-  try {
+  let cancelRequest = () => {};
+  const cancelled = new Promise<never>((_, reject) => {
+    cancelRequest = () => {
+      // Settle our caller even if the WebView does not settle an aborted fetch.
+      reject(requestAborted());
+      controller.abort();
+    };
+  });
+  const timeout = window.setTimeout(cancelRequest, 15_000);
+  options.signal?.addEventListener('abort', cancelRequest, { once: true });
+  async function request(): Promise<T> {
     const response = await fetch(path, {
       method: options.method ?? (options.body === undefined ? 'GET' : 'POST'),
       headers: {
@@ -21,8 +36,14 @@ export async function api<T>(path: string, options: { token?: string; body?: unk
       credentials: 'omit',
       cache: 'no-store',
     });
+    if (controller.signal.aborted) throw requestAborted();
     if (response.status === 204) return undefined as T;
-    const data = await response.json().catch(() => null);
+    const data = await response.json().catch((cause: unknown) => {
+      // Invalid JSON is different from an interrupted or failed body download.
+      if (cause instanceof SyntaxError) return null;
+      throw cause;
+    });
+    if (controller.signal.aborted) throw requestAborted();
     if (!response.ok) {
       const code = typeof data?.error?.code === 'string' ? data.error.code : 'request_failed';
       // Only the pilot access response has a deliberately public, actionable message.
@@ -32,7 +53,15 @@ export async function api<T>(path: string, options: { token?: string; body?: unk
     }
     if (data === null) throw new ApiError(502, 'invalid_response');
     return data as T;
-  } finally { window.clearTimeout(timeout); }
+  }
+  try {
+    // The deadline also covers reading the response body. Do not retry writes:
+    // an interrupted response does not tell us whether the server saved them.
+    return await Promise.race([request(), cancelled]);
+  } finally {
+    window.clearTimeout(timeout);
+    options.signal?.removeEventListener('abort', cancelRequest);
+  }
 }
 export function saveProfile(token: string, body: ProfileInput, revision: number): Promise<Profile> {
   return api<Profile>('/api/profile', { token, method: 'PUT', body, revision });

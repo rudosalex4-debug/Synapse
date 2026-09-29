@@ -176,6 +176,7 @@ export function App() {
   const [state, setState] = useState<'loading' | 'ready' | 'authenticating' | 'error'>('loading');
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
+  const [connectionStage, setConnectionStage] = useState('Подключаемся к сообществу…');
   const [persona, setPersona] = useState<'anna' | 'boris'>('anna');
   const [profileDirty, setProfileDirty] = useState(false);
   const [workflowDirty, setWorkflowDirty] = useState(false);
@@ -191,29 +192,63 @@ export function App() {
 
   useEffect(() => {
     let active = true;
+    let deadlineExpired = false;
+    const controller = new AbortController();
+    const waiting = new Set(['сервис', 'каталог тем', 'связь с MAX']);
+    const showWaiting = () => {
+      if (active && !controller.signal.aborted) setConnectionStage(`Подключаемся: ${Array.from(waiting).join(', ')}…`);
+    };
+    async function loadPart<T>(name: string, task: Promise<T>, accept: (value: T) => void): Promise<T> {
+      const value = await task;
+      if (active && !controller.signal.aborted) {
+        accept(value); waiting.delete(name); showWaiting();
+      }
+      return value;
+    }
+    // One deadline covers bootstrap, MAX authentication and profile loading.
+    // Cleanup cancels old requests so a retry cannot apply a stale session.
+    const deadline = window.setTimeout(() => {
+      if (!active) return;
+      deadlineExpired = true; controller.abort();
+      setError('Подключение заняло слишком много времени. Повторите вход; если это не поможет, закройте мини-приложение и откройте его через бота.');
+      setState('error');
+    }, 25_000);
     setState('loading'); setError(''); setSignedOut(false);
+    setBridge({ state: 'loading', platform: 'Определяется…', hasLaunchData: false });
+    showWaiting();
     async function start() {
       try {
-        const [settings, catalog, webApp] = await Promise.all([api<Bootstrap>('/api/bootstrap'), api<Taxonomy>('/api/taxonomy'), loadBridge()]);
-        if (!active) return;
-        setBootstrap(settings); setTaxonomy(catalog); setBridge(bridgeSummary(webApp, webApp ? 'loaded' : 'unavailable'));
+        const [, , webApp] = await Promise.all([
+          loadPart('сервис', api<Bootstrap>('/api/bootstrap', { signal: controller.signal }), setBootstrap),
+          loadPart('каталог тем', api<Taxonomy>('/api/taxonomy', { signal: controller.signal }), setTaxonomy),
+          loadPart('связь с MAX', loadBridge(), app => setBridge(bridgeSummary(app, app ? 'loaded' : 'unavailable'))),
+        ]);
+        if (!active || controller.signal.aborted) return;
         webApp?.ready?.();
         if (webApp?.initData) {
-          setState('authenticating');
-          const nextSession = await api<Session>('/api/auth/max', { body: { initData: webApp.initData } });
-          const nextProfile = await api<Profile>('/api/profile', { token: nextSession.token });
-          if (!active) return;
+          setState('authenticating'); setConnectionStage('Подтверждаем вход через MAX…');
+          const nextSession = await api<Session>('/api/auth/max', { body: { initData: webApp.initData }, signal: controller.signal });
+          if (!active || controller.signal.aborted) return;
+          setConnectionStage('Загружаем ваш профиль…');
+          const nextProfile = await api<Profile>('/api/profile', { token: nextSession.token, signal: controller.signal });
+          if (!active || controller.signal.aborted) return;
           setSession(nextSession); setProfile(nextProfile); setLoginSource({ kind: 'max' }); setSessionConfirmed(true);
         }
         setState('ready');
-      } catch (cause) { if (active) { setError(errorMessage(cause)); setState('error'); } }
+      } catch (cause) {
+        controller.abort();
+        if (active) {
+          setError(deadlineExpired ? 'Подключение заняло слишком много времени. Повторите вход; если это не поможет, закройте мини-приложение и откройте его через бота.' : errorMessage(cause));
+          setState('error');
+        }
+      } finally { window.clearTimeout(deadline); }
     }
     void start();
-    return () => { active = false; };
+    return () => { active = false; window.clearTimeout(deadline); controller.abort(); };
   }, [attempt]);
 
   async function demoLogin() {
-    setState('authenticating'); setError('');
+    setState('authenticating'); setConnectionStage('Открываем учебный профиль…'); setError('');
     try {
       const nextSession = await api<Session>('/api/auth/demo', { body: { persona } });
       const nextProfile = await api<Profile>('/api/profile', { token: nextSession.token });
@@ -250,7 +285,7 @@ export function App() {
       {profile && session && taxonomy && <Workspace key={profile.id} rulesAccepted={rulesAccepted} onRulesRequired={reviewRules} profile={profile} session={session} taxonomy={taxonomy} onRenewSession={renewSession} onSessionExpired={() => setSessionConfirmed(false)} onDirtyChange={setWorkflowDirty} />}
       <section id="knowledge" className="profile-section" aria-labelledby="knowledge-title"><div className="section-heading"><div><span className="eyebrow">ЗНАНИЯ СТАНОВЯТСЯ ПОЛЕЗНЕЕ, КОГДА ИМИ ДЕЛЯТСЯ</span><h2 id="knowledge-title">Мои знания</h2></div><span className="section-step">01 - Профиль</span></div><p className="section-intro">Можно помочь собеседнику с поступлением и самому спросить о первой стажировке. Один профиль - для обеих сторон.</p>
         {bootstrap?.mode === 'demo' && !bridge.hasLaunchData && <div className="demo-banner"><strong>Демонстрационный режим</strong><span>Тестовые участники вымышлены. Данные сохраняются на локальном сервере.</span></div>}
-        {(state === 'loading' || state === 'authenticating') && <div className="loading-state" role="status"><span className="spinner"/>{state === 'authenticating' ? 'Входим и загружаем профиль…' : 'Подключаемся к сообществу…'}</div>}
+        {(state === 'loading' || state === 'authenticating') && <div><div className="loading-state" role="status"><span className="spinner"/>{connectionStage}</div>{state === 'loading' && <button className="text-button" type="button" onClick={() => setAttempt(current => current + 1)}>Повторить подключение</button>}</div>}
         {error && !profile && <ErrorNotice message={error} retry={() => setAttempt((current) => current + 1)} />}
         {profile && session && taxonomy ? <ProfileForm key={profile.id} rulesAccepted={rulesAccepted} onRulesRequired={reviewRules} profile={profile} session={session} taxonomy={taxonomy} onSaved={setProfile} onLogout={signOut} onRenewSession={renewSession} onSessionExpired={() => setSessionConfirmed(false)} onDirtyChange={setProfileDirty}/> : bootstrap && state !== 'loading' && state !== 'authenticating' && (!bridge.hasLaunchData && bootstrap.mode === 'demo' ? <div className="login-panel"><div><h3>Посмотрите, как устроен профиль</h3><p>Выберите учебного участника: можно задать вопрос об учёбе или карьере и добавить собственный опыт.</p></div><fieldset className="persona-picker"><legend className="sr-only">Учебный участник</legend><label className={persona === 'anna' ? 'persona selected' : 'persona'}><input type="radio" name="persona" checked={persona === 'anna'} onChange={() => setPersona('anna')}/><span className="persona-avatar lavender">А</span><span><strong>Анна</strong><small>Тестовый участник 01</small></span></label><label className={persona === 'boris' ? 'persona selected' : 'persona'}><input type="radio" name="persona" checked={persona === 'boris'} onChange={() => setPersona('boris')}/><span className="persona-avatar green">Б</span><span><strong>Борис</strong><small>Тестовый участник 02</small></span></label></fieldset><button className="button primary" onClick={() => void demoLogin()}>Открыть учебный профиль <Arrow/></button></div> : !bridge.hasLaunchData ? <div className="login-panel"><h3>Откройте приложение в MAX</h3><p>Вход доступен через мини-приложение бота. Открытие этой страницы в обычном браузере не подтверждает вашу личность.</p><button className="button secondary" onClick={() => setAttempt((current) => current + 1)}>Проверить подключение</button></div> : signedOut ? <div className="login-panel"><h3>Вы вышли из профиля</h3><p>Чтобы сменить участника, откройте мини-приложение из нужного аккаунта MAX.</p><button className="button secondary" onClick={() => setAttempt((current) => current + 1)}>Войти снова</button></div> : null)}
       </section>

@@ -17,6 +17,28 @@ namespace {
 using Response=drogon::HttpResponsePtr;
 using Request=drogon::HttpRequestPtr;
 using Callback=std::function<void(const Response&)>;
+// Only fixed route labels enter diagnostics: never paths with user/resource IDs.
+const char* diagnostic_route(const std::string& path){
+ for(const auto* route:{"/health/live","/health/ready","/api/bootstrap","/api/taxonomy",
+   "/api/auth/max","/api/auth/demo","/api/auth/logout","/api/profile",
+   "/api/community-rules","/api/community-rules/status","/api/community-rules/accept",
+   "/api/notification-settings","/api/blocks","/api/reports","/webhooks/max"})
+  if(path==route)return route;
+ for(const auto* area:{"/api/requests","/api/offers","/api/conversations","/api/moderation"})
+  if(path==area||path.starts_with(std::string(area)+"/"))return area;
+ return "other";
+}
+const char* diagnostic_method(drogon::HttpMethod method){
+ if(method==drogon::Get)return "GET";
+ if(method==drogon::Post)return "POST";
+ if(method==drogon::Put)return "PUT";
+ return "OTHER";
+}
+struct RequestTiming {
+ using Clock=std::chrono::steady_clock;
+ Clock::time_point received=Clock::now(),enqueued=received,processing=received;
+ bool processing_started=false;
+};
 class Executor {
  std::mutex mutex_;std::condition_variable ready_;
  std::deque<std::function<void()>> tasks_;std::vector<std::thread> threads_;bool stopped_=false;
@@ -69,7 +91,27 @@ void run_server(const Config&config){
  const auto catalog=load_catalog(config);
  auto executor=std::make_shared<Executor>();auto limit=std::make_shared<RateLimit>();
  auto handler=[config,catalog,executor,limit](const Request&request,Callback&&callback){
+  auto timing=std::make_shared<RequestTiming>();
   const auto request_id=uuid(),path=request->path();
+  // The wrapper runs for immediate rejections as well as queued responses. These
+  // durations end before network delivery and do not measure client/TLS latency.
+  callback=[complete=std::move(callback),timing,request_id,
+    route=diagnostic_route(path),method=diagnostic_method(request->method())](const Response& response){
+   const auto finished=RequestTiming::Clock::now();
+   const auto milliseconds=[](auto elapsed){return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();};
+   const auto total_ms=milliseconds(finished-timing->received);
+   const auto queue_ms=timing->processing_started?milliseconds(timing->processing-timing->enqueued):0;
+   const auto handler_ms=milliseconds(finished-(timing->processing_started?timing->processing:timing->received));
+   const auto status=static_cast<int>(response->statusCode());
+   if(status>=400||total_ms>=1000){
+    // Drogon's logger serializes concurrent records. All fields are fixed labels,
+    // generated request IDs, HTTP status codes or durations; no request data.
+    LOG_WARN << Json{{"event","http_request"},{"requestId",request_id},
+     {"method",method},{"route",route},{"status",status},
+     {"queue_ms",queue_ms},{"handler_ms",handler_ms},{"total_ms",total_ms}}.dump();
+   }
+   complete(response);
+  };
   if(path=="/health/live"){callback(json_response(Json{{"status","ok"}},200,request_id));return;}
   const bool auth=path.starts_with("/api/auth/");
   if(!limit->allow(request->peerAddr().toIp()+(auth?":auth":":api"),auth?30U:300U)){
@@ -79,7 +121,8 @@ void run_server(const Config&config){
     !constant_equals(request->getHeader("x-max-bot-api-secret"),config.webhook_secret))){
    callback(failure(403,"WEBHOOK_FORBIDDEN","Событие не подтверждено",request_id));return;
   }
-  auto work=[config,catalog,request,callback,request_id,path,limit]{
+  auto work=[config,catalog,request,callback,request_id,path,limit,timing]{
+   timing->processing=RequestTiming::Clock::now();timing->processing_started=true;
    try{
     Json data;int status=200;
     if(path=="/health/live")data={{"status","ok"}};
@@ -136,6 +179,9 @@ void run_server(const Config&config){
    catch(const DbError&){log_event("request_failed","DB_UNAVAILABLE");callback(failure(503,"DB_UNAVAILABLE","База временно недоступна. Повторите запрос",request_id));}
    catch(const std::exception&){log_event("request_failed","INTERNAL_ERROR");callback(failure(500,"INTERNAL_ERROR","Не удалось выполнить запрос",request_id));}
   };
+  // Published before submit under the executor's mutex; the worker alone then
+  // updates timing and completes the response (or this thread handles rejection).
+  timing->enqueued=RequestTiming::Clock::now();
   if(!executor->submit(std::move(work)))callback(failure(503,"SERVER_BUSY","Сервер занят. Повторите запрос",request_id));
  };
  auto &app=drogon::app();
