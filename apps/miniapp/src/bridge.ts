@@ -10,11 +10,21 @@ let loading:Promise<MaxWebApp|undefined>|undefined;
 export function loadBridge():Promise<MaxWebApp|undefined> {
   if(window.WebApp) return Promise.resolve(window.WebApp);
   if(loading) return loading;
-  loading=new Promise(resolve=>{
+  const attempt=new Promise<MaxWebApp|undefined>(resolve=>{
     const script=document.createElement('script');script.src='https://st.max.ru/js/max-web-app.js';script.async=true;
     let complete=false;
-    const finish=()=>{if(complete)return;complete=true;window.clearTimeout(timer);script.onload=null;script.onerror=null;resolve(window.WebApp)};
-    const timer=window.setTimeout(finish,6000);script.onload=finish;script.onerror=finish;document.head.append(script);
-  });
-  return loading;
+    const finish=()=>{
+      if(complete)return;
+      complete=true;window.clearTimeout(timer);script.onload=null;script.onerror=null;
+      const app=window.WebApp;
+      if(!app)script.remove();
+      resolve(app);
+    };
+    const timer=window.setTimeout(finish,6000);script.onload=finish;script.onerror=finish;
+    try {document.head.append(script)} catch {finish()}
+  }).catch(()=>undefined);
+  loading=attempt;
+  // Share only the in-flight attempt. A failed load must allow an explicit retry.
+  void attempt.then(()=>{if(loading===attempt)loading=undefined});
+  return attempt;
 }
