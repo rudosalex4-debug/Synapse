@@ -7,6 +7,9 @@ solution:
   version: 0.12.0
 base_url: '<TODO: вставить единый публичный HTTPS-адрес API без завершающего слеша>'
 openapi: ./openapi.json
+test_data: ./data/api-check-data.json
+test_accounts: ./data/api-test-accounts.json
+preparation_guide: ./docs/API_TEST_DATA.md
 execution:
   order: mandatory_checks выполняются последовательно; при ошибке зависимые шаги останавливаются.
   substitution: ${NAME} - входная или сохранённая переменная. Отдельное значение сохраняет JSON-тип; внутри строки подставляется
@@ -18,7 +21,7 @@ execution:
     и обязательные поля ответов определены в openapi.json.
   defaults: Отсутствующие query_parameters/path_parameters/headers - пустые; отсутствие body означает запрос без тела. Content-Type
     ответа проверяется без параметра charset.
-  pagination: В matched_feed при отсутствии вопроса и непустом nextCursor повторить GET с query cursor=nextCursor до совпадения
+  pagination: В matched_feed при отсутствии вопроса и непустом nextCursor повторить GET с query after=nextCursor до совпадения
     или конца списка.
   retry: Для каждого нового прогона сгенерировать отдельные UUID v4 из generated_variables. При повторе той же операции после
     сетевой ошибки сохранить ключ; clientMessageId сохранять для того же сообщения.

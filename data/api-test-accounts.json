@@ -1,0 +1,97 @@
+{
+  "format_version": "1.0",
+  "description": "Паспорта ролей для API-проверки. Demo-аккаунты готовы после jury.sh up; публичные роли требуют двух разных реальных MAX-аккаунтов. MAX ID, телефонов, паролей и сессий в файле нет.",
+  "accounts": [
+    {
+      "id": "author",
+      "scenario_name": "Тестовый автор",
+      "manifest_roles": [
+        "author_login",
+        "author"
+      ],
+      "local": {
+        "base_url": "http://localhost:18080",
+        "method": "POST",
+        "path": "/api/auth/demo",
+        "body": {
+          "persona": "anna"
+        },
+        "password_required": false,
+        "provisioning": "Автоматически при начальном заполнении локальной demo-БД."
+      },
+      "max": {
+        "base_url_source": "../DATA-API.yaml#/base_url",
+        "method": "POST",
+        "path": "/api/auth/max",
+        "body": {
+          "initData": "${MAX_INIT_DATA_AUTHOR}"
+        },
+        "password_required": false,
+        "provisioning": "Профиль приложения создаётся при первом успешном входе реального пользователя MAX; фикстура не создаёт аккаунт в мессенджере."
+      },
+      "session_capture": {
+        "AUTHOR_TOKEN": "/token",
+        "AUTHOR_ID": "/user/id",
+        "expires_at": "/expiresAt"
+      },
+      "initial_state": {
+        "open_questions": 0,
+        "active_conversations": 0,
+        "mutual_blocks": false
+      }
+    },
+    {
+      "id": "helper",
+      "scenario_name": "Тестовый помощник",
+      "manifest_roles": [
+        "helper_login",
+        "helper"
+      ],
+      "local": {
+        "base_url": "http://localhost:18080",
+        "method": "POST",
+        "path": "/api/auth/demo",
+        "body": {
+          "persona": "boris"
+        },
+        "password_required": false,
+        "provisioning": "Автоматически при начальном заполнении локальной demo-БД."
+      },
+      "max": {
+        "base_url_source": "../DATA-API.yaml#/base_url",
+        "method": "POST",
+        "path": "/api/auth/max",
+        "body": {
+          "initData": "${MAX_INIT_DATA_HELPER}"
+        },
+        "password_required": false,
+        "provisioning": "Профиль приложения создаётся при первом успешном входе реального пользователя MAX; фикстура не создаёт аккаунт в мессенджере."
+      },
+      "session_capture": {
+        "HELPER_TOKEN": "/token",
+        "HELPER_ID": "/user/id",
+        "expires_at": "/expiresAt"
+      },
+      "initial_state": {
+        "open_questions": 0,
+        "active_conversations": 0,
+        "mutual_blocks": false,
+        "active_competencies": []
+      }
+    }
+  ],
+  "anonymous": {
+    "manifest_roles": [
+      "anonymous"
+    ],
+    "account_required": false,
+    "authorization_header": false
+  },
+  "moderator_required": false,
+  "notes": [
+    "author_login и author используют одну учётную запись; helper_login и helper — другую.",
+    "Роли относятся к сценарию: обычный участник может и спрашивать, и помогать.",
+    "Для публичного прогона нельзя подставлять локальные demo-токены; отдельного пароля приложения нет.",
+    "Реальные аккаунты и выдача свежих подписанных данных согласуются отдельно; этот файл не подтверждает наличие переданного доступа к MAX."
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "format_version": "1.0",
+  "dataset_id": "synapse-education-help-v1",
+  "synthetic": true,
+  "scenario": "Выбор программы: знание → вопрос → отклик → диалог → результат",
+  "manifest": "../DATA-API.yaml",
+  "accounts": "./api-test-accounts.json",
+  "catalog": "./taxonomy.example.json",
+  "topic_id": "pathways.admissions.program_choice",
+  "substitution": "${NAME} берётся из DATA-API.yaml: input_variables, generated_variables или capture. Отдельное значение сохраняет JSON-тип; внутри строки подставляется текст.",
+  "loading": "Передавать request_bodies_by_check как тела запросов соответствующих шагов mandatory_checks. Весь файл одним запросом не отправляется; seed его не импортирует.",
+  "request_bodies_by_check": {
+    "login_author": {
+      "initData": "${MAX_INIT_DATA_AUTHOR}"
+    },
+    "accept_rules_author": {
+      "version": "${RULES_VERSION}"
+    },
+    "login_helper": {
+      "initData": "${MAX_INIT_DATA_HELPER}"
+    },
+    "accept_rules_helper": {
+      "version": "${RULES_VERSION}"
+    },
+    "add_knowledge": {
+      "displayName": "${HELPER_NAME}",
+      "bio": "${HELPER_BIO}",
+      "availableToHelp": true,
+      "maxActiveConversations": 2,
+      "competencies": [
+        {
+          "topicId": "pathways.admissions.program_choice",
+          "facets": {},
+          "experienceKind": "participation",
+          "description": "Синтетический опыт для проверки: сравнивал учебные планы и проекты университетских программ.",
+          "evidenceVisibility": "private"
+        }
+      ]
+    },
+    "create_draft": {
+      "title": "Как сравнить университетские программы?",
+      "body": "Тестовый вопрос жюри: хочу понять, как сравнить учебные планы, проекты и нагрузку перед выбором программы.",
+      "learningGoal": "understand",
+      "topicId": "pathways.admissions.program_choice",
+      "facets": {},
+      "requiredFacets": [],
+      "taxonomyVersion": "${TAXONOMY_VERSION}"
+    },
+    "publish_question": {},
+    "offer_help": {
+      "message": "Помогу сравнить учебные планы и примеры проектов. Это тестовый отклик жюри."
+    },
+    "choose_helper": {},
+    "author_message": {
+      "clientMessageId": "${AUTHOR_MESSAGE_ID}",
+      "text": "Какие разделы учебного плана лучше сравнить сначала?"
+    },
+    "helper_reply": {
+      "clientMessageId": "${HELPER_MESSAGE_ID}",
+      "text": "Начните с обязательных дисциплин, проектной практики и вариантов специализации."
+    },
+    "close_with_result": {
+      "outcome": "helpful",
+      "comment": "Тестовый результат: критерии сравнения стали понятны.",
+      "nextStep": "Сравню два учебных плана и составлю вопросы студентам."
+    },
+    "restore_helper_profile": {
+      "displayName": "${HELPER_NAME}",
+      "bio": "${HELPER_BIO}",
+      "availableToHelp": "${HELPER_AVAILABLE}",
+      "maxActiveConversations": "${HELPER_CAPACITY}",
+      "competencies": []
+    },
+    "logout_author": {},
+    "logout_helper": {}
+  },
+  "expected_result": {
+    "question_status": "resolved",
+    "conversation_status": "closed",
+    "outcome": "helpful",
+    "messages": 2,
+    "helper_active_competencies_after_cleanup": 0,
+    "history_retained": true
+  }
+}
