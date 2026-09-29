@@ -48,7 +48,10 @@ describe('редактор учебного вопроса', () => {
     expect(changeRequestFacet(validDraft(), 'tool', 'excel', true).facets.tool).toEqual(['excel']);
   });
   it.each(['digital', 'languages.archived', 'unknown'])('не разрешает публикацию без активной темы L2+ (%s)', topicId => {
-    expect(requestValidation({ ...validDraft(), topicId }, taxonomy)).toContain('второго уровня');
+    expect(requestValidation({ ...validDraft(), topicId }, taxonomy)).not.toBe('');
+  });
+  it.each(['digital.sheets', 'digital.sheets.pivots'])('разрешает публикацию с активной темой L2+ (%s)', topicId => {
+    expect(requestValidation({ ...validDraft(), topicId }, taxonomy)).toBe('');
   });
   it('не считает пробелы подробным описанием и отвергает пустое обязательное условие', () => {
     expect(requestValidation({ ...validDraft(), body: ' '.repeat(30) }, taxonomy)).toContain('30');

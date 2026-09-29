@@ -170,7 +170,8 @@ Json save_profile(Db &db,const Json &catalog,const std::string &id,const Json &b
  if(config&&(before_profile.at("competencies")!=result.at("competencies")||
     (user.get(0,"available_to_help")!="t"&&input.at("availableToHelp").get<bool>())))
   enqueue_matching_profile(db,*config,id);
- if(tx)tx->commit();return result;
+ if(tx)tx->commit();
+ return result;
 }
 void accept_webhook(Db &db,const Json &body){
  auto event=parse_update(body);if(!event)return;
