@@ -1,0 +1,583 @@
+# Конфигурация обязательных HTTP-проверок для жюри. Секреты передаются отдельно.
+schema_version: '1.0'
+format: synapse-data-api
+description: Формат проверок проекта
+solution:
+  name: Synapse - Синапс
+  version: 0.12.0
+base_url: '<TODO: вставить единый публичный HTTPS-адрес API без завершающего слеша>'
+openapi: ./openapi.json
+execution:
+  order: mandatory_checks выполняются последовательно; при ошибке зависимые шаги останавливаются.
+  substitution: ${NAME} - входная или сохранённая переменная. Отдельное значение сохраняет JSON-тип; внутри строки подставляется
+    текст. {id} заменяется path_parameters.id; query_parameters кодируются в URL.
+  capture: capture связывает имя переменной с JSON Pointer в теле успешного ответа.
+  assertions: equals сравнивает значение по JSON Pointer целиком; contains проверяет наличие в массиве объектов с указанными
+    полями. Все перечисленные условия обязательны.
+  schemas: json_schema использует JSON Schema 2020-12; локальные $ref разрешаются относительно этого файла. Типы, структура
+    и обязательные поля ответов определены в openapi.json.
+  defaults: Отсутствующие query_parameters/path_parameters/headers - пустые; отсутствие body означает запрос без тела. Content-Type
+    ответа проверяется без параметра charset.
+  pagination: В matched_feed при отсутствии вопроса и непустом nextCursor повторить GET с query cursor=nextCursor до совпадения
+    или конца списка.
+  retry: Для каждого нового прогона сгенерировать отдельные UUID v4 из generated_variables. При повторе той же операции после
+    сетевой ошибки сохранить ключ; clientMessageId сохранять для того же сообщения.
+prerequisites:
+- 'Заполнить base_url: только HTTPS, общий origin API и mini-app; MAX-бот и прикреплённое mini-app должны быть настроены.'
+- 'Два разных выделенных тестовых аккаунта MAX: автор и помощник; без активных вопросов/диалогов и взаимных блокировок. У
+  помощника нет активных знаний; это проверяет helper_profile.'
+- При закрытом пилоте оба MAX ID добавлены в PILOT_ALLOWED_MAX_IDS. Участники ознакомлены с правилами и согласны принять их
+  в тесте.
+- Получить свежий raw window.WebApp.initData каждого аккаунта при открытии mini-app из бота; передать без декодирования и
+  изменения. По умолчанию данные действуют не более часа.
+- MAX_INIT_DATA_* и выданные bearer-токены передаются исполнителю приватно, не сохраняются в репозитории и логах. Токен бота,
+  пароль БД и отдельные логины/пароли не требуются.
+roles:
+  anonymous: Без авторизации.
+  author_login: Тестовый автор MAX; вход по MAX_INIT_DATA_AUTHOR, без bearer.
+  helper_login: Тестовый помощник MAX; вход по MAX_INIT_DATA_HELPER, без bearer.
+  author: Автор вопроса; bearer AUTHOR_TOKEN из login_author.
+  helper: Помощник; bearer HELPER_TOKEN из login_helper.
+input_variables:
+  MAX_INIT_DATA_AUTHOR:
+    type: string
+    secret: true
+    required: true
+  MAX_INIT_DATA_HELPER:
+    type: string
+    secret: true
+    required: true
+generated_variables:
+  CREATE_KEY: uuid-v4
+  PUBLISH_KEY: uuid-v4
+  OFFER_KEY: uuid-v4
+  ACCEPT_KEY: uuid-v4
+  CLOSE_KEY: uuid-v4
+  AUTHOR_MESSAGE_ID: uuid-v4
+  HELPER_MESSAGE_ID: uuid-v4
+data_lifecycle: Прогон создаёт синтетический вопрос и переписку. После успеха вопрос закрыт, исходные поля профиля помощника
+  восстановлены, сессии отозваны; история и принятие правил сохраняются. При прерывании завершить/отменить тестовый вопрос
+  и восстановить профиль через mini-app перед новым прогоном.
+mandatory_checks:
+- id: ready
+  role: anonymous
+  method: GET
+  path: /health/ready
+  request:
+    headers:
+      Accept: application/json
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1health~1ready/get/responses/200/content/application~1json/schema
+    equals:
+      /status: ready
+- id: catalog
+  role: anonymous
+  method: GET
+  path: /api/taxonomy
+  request:
+    headers:
+      Accept: application/json
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1api~1taxonomy/get/responses/200/content/application~1json/schema
+    contains:
+      /topics:
+      - id: pathways.admissions.program_choice
+        active: true
+  capture:
+    TAXONOMY_VERSION: /version
+- id: read_rules
+  role: anonymous
+  method: GET
+  path: /api/community-rules
+  request:
+    headers:
+      Accept: application/json
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/CommunityRules
+  capture:
+    RULES_VERSION: /version
+- id: deny_anonymous_profile
+  role: anonymous
+  method: GET
+  path: /api/profile
+  request:
+    headers:
+      Accept: application/json
+  expected:
+    status_codes: [401]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Error
+- id: login_author
+  role: author_login
+  method: POST
+  path: /api/auth/max
+  request:
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body:
+      initData: ${MAX_INIT_DATA_AUTHOR}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1api~1auth~1max/post/responses/200/content/application~1json/schema
+  capture:
+    AUTHOR_TOKEN: /token
+    AUTHOR_ID: /user/id
+- id: accept_rules_author
+  role: author
+  method: POST
+  path: /api/community-rules/accept
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+    body:
+      version: ${RULES_VERSION}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/CommunityRulesStatus
+    equals:
+      /accepted: true
+      /version: ${RULES_VERSION}
+- id: login_helper
+  role: helper_login
+  method: POST
+  path: /api/auth/max
+  request:
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body:
+      initData: ${MAX_INIT_DATA_HELPER}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1api~1auth~1max/post/responses/200/content/application~1json/schema
+  capture:
+    HELPER_TOKEN: /token
+    HELPER_ID: /user/id
+- id: accept_rules_helper
+  role: helper
+  method: POST
+  path: /api/community-rules/accept
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+    body:
+      version: ${RULES_VERSION}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/CommunityRulesStatus
+    equals:
+      /accepted: true
+      /version: ${RULES_VERSION}
+- id: helper_profile
+  role: helper
+  method: GET
+  path: /api/profile
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Profile
+    equals:
+      /competencies: []
+  capture:
+    HELPER_REVISION: /revision
+    HELPER_NAME: /displayName
+    HELPER_BIO: /bio
+    HELPER_AVAILABLE: /availableToHelp
+    HELPER_CAPACITY: /maxActiveConversations
+- id: add_knowledge
+  role: helper
+  method: PUT
+  path: /api/profile
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+      If-Match: '"${HELPER_REVISION}"'
+    body:
+      displayName: ${HELPER_NAME}
+      bio: ${HELPER_BIO}
+      availableToHelp: true
+      maxActiveConversations: 2
+      competencies:
+      - topicId: pathways.admissions.program_choice
+        facets: {}
+        experienceKind: participation
+        description: 'Синтетический опыт для проверки: сравнивал учебные планы и проекты университетских программ.'
+        evidenceVisibility: private
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Profile
+    contains:
+      /competencies:
+      - topicId: pathways.admissions.program_choice
+  capture:
+    HELPER_UPDATED_REVISION: /revision
+- id: create_draft
+  role: author
+  method: POST
+  path: /api/requests
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+      Idempotency-Key: ${CREATE_KEY}
+    body:
+      title: Как сравнить университетские программы?
+      body: 'Тестовый вопрос жюри: хочу понять, как сравнить учебные планы, проекты и нагрузку перед выбором программы.'
+      learningGoal: understand
+      topicId: pathways.admissions.program_choice
+      facets: {}
+      requiredFacets: []
+      taxonomyVersion: ${TAXONOMY_VERSION}
+  expected:
+    status_codes: [201]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Request
+    equals:
+      /status: draft
+      /authorId: ${AUTHOR_ID}
+  capture:
+    REQUEST_ID: /id
+- id: draft_is_private
+  role: helper
+  method: GET
+  path: /api/requests/{id}
+  request:
+    path_parameters:
+      id: ${REQUEST_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+  expected:
+    status_codes: [404]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Error
+- id: publish_question
+  role: author
+  method: POST
+  path: /api/requests/{id}/publish
+  request:
+    path_parameters:
+      id: ${REQUEST_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+      Idempotency-Key: ${PUBLISH_KEY}
+    body: {}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Request
+    equals:
+      /status: open
+- id: matched_feed
+  role: helper
+  method: GET
+  path: /api/requests
+  request:
+    query_parameters:
+      scope: feed
+      limit: 50
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/RequestPage
+    contains:
+      /items:
+      - id: ${REQUEST_ID}
+- id: offer_help
+  role: helper
+  method: POST
+  path: /api/requests/{id}/offers
+  request:
+    path_parameters:
+      id: ${REQUEST_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+      Idempotency-Key: ${OFFER_KEY}
+    body:
+      message: Помогу сравнить учебные планы и примеры проектов. Это тестовый отклик жюри.
+  expected:
+    status_codes: [201]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Offer
+    equals:
+      /requestId: ${REQUEST_ID}
+      /helperId: ${HELPER_ID}
+      /status: pending
+  capture:
+    OFFER_ID: /id
+- id: author_sees_offers
+  role: author
+  method: GET
+  path: /api/requests/{id}/offers
+  request:
+    path_parameters:
+      id: ${REQUEST_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/OfferList
+    contains:
+      /items:
+      - id: ${OFFER_ID}
+        helperId: ${HELPER_ID}
+- id: choose_helper
+  role: author
+  method: POST
+  path: /api/offers/{id}/accept
+  request:
+    path_parameters:
+      id: ${OFFER_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+      Idempotency-Key: ${ACCEPT_KEY}
+    body: {}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Conversation
+    equals:
+      /status: active
+      /requestId: ${REQUEST_ID}
+      /authorId: ${AUTHOR_ID}
+      /helperId: ${HELPER_ID}
+  capture:
+    CONVERSATION_ID: /id
+- id: author_message
+  role: author
+  method: POST
+  path: /api/conversations/{id}/messages
+  request:
+    path_parameters:
+      id: ${CONVERSATION_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+    body:
+      clientMessageId: ${AUTHOR_MESSAGE_ID}
+      text: Какие разделы учебного плана лучше сравнить сначала?
+  expected:
+    status_codes: [201]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Message
+    equals:
+      /senderId: ${AUTHOR_ID}
+  capture:
+    MESSAGE_ID: /id
+- id: helper_reads_message
+  role: helper
+  method: GET
+  path: /api/conversations/{id}/messages
+  request:
+    path_parameters:
+      id: ${CONVERSATION_ID}
+    query_parameters:
+      after: 0
+      limit: 50
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/MessagePage
+    contains:
+      /items:
+      - id: ${MESSAGE_ID}
+        clientMessageId: ${AUTHOR_MESSAGE_ID}
+- id: helper_reply
+  role: helper
+  method: POST
+  path: /api/conversations/{id}/messages
+  request:
+    path_parameters:
+      id: ${CONVERSATION_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+    body:
+      clientMessageId: ${HELPER_MESSAGE_ID}
+      text: Начните с обязательных дисциплин, проектной практики и вариантов специализации.
+  expected:
+    status_codes: [201]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Message
+    equals:
+      /senderId: ${HELPER_ID}
+  capture:
+    REPLY_ID: /id
+- id: author_reads_reply
+  role: author
+  method: GET
+  path: /api/conversations/{id}/messages
+  request:
+    path_parameters:
+      id: ${CONVERSATION_ID}
+    query_parameters:
+      after: 0
+      limit: 50
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/MessagePage
+    contains:
+      /items:
+      - id: ${REPLY_ID}
+        clientMessageId: ${HELPER_MESSAGE_ID}
+- id: close_with_result
+  role: author
+  method: POST
+  path: /api/conversations/{id}/close
+  request:
+    path_parameters:
+      id: ${CONVERSATION_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+      Idempotency-Key: ${CLOSE_KEY}
+    body:
+      outcome: helpful
+      comment: 'Тестовый результат: критерии сравнения стали понятны.'
+      nextStep: Сравню два учебных плана и составлю вопросы студентам.
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Conversation
+    equals:
+      /status: closed
+      /outcome: helpful
+      /nextStep: Сравню два учебных плана и составлю вопросы студентам.
+- id: question_resolved
+  role: author
+  method: GET
+  path: /api/requests/{id}
+  request:
+    path_parameters:
+      id: ${REQUEST_ID}
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Request
+    equals:
+      /status: resolved
+- id: restore_helper_profile
+  role: helper
+  method: PUT
+  path: /api/profile
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+      If-Match: '"${HELPER_UPDATED_REVISION}"'
+    body:
+      displayName: ${HELPER_NAME}
+      bio: ${HELPER_BIO}
+      availableToHelp: ${HELPER_AVAILABLE}
+      maxActiveConversations: ${HELPER_CAPACITY}
+      competencies: []
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/components/schemas/Profile
+    equals:
+      /competencies: []
+      /availableToHelp: ${HELPER_AVAILABLE}
+- id: logout_author
+  role: author
+  method: POST
+  path: /api/auth/logout
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${AUTHOR_TOKEN}
+      Content-Type: application/json
+    body: {}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json/schema
+- id: logout_helper
+  role: helper
+  method: POST
+  path: /api/auth/logout
+  request:
+    headers:
+      Accept: application/json
+      Authorization: Bearer ${HELPER_TOKEN}
+      Content-Type: application/json
+    body: {}
+  expected:
+    status_codes: [200]
+    content_type: application/json
+    json_schema:
+      $ref: ./openapi.json#/paths/~1api~1auth~1logout/post/responses/200/content/application~1json/schema
+
