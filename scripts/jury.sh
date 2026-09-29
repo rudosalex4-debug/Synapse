@@ -8,12 +8,15 @@ die() { printf 'jury: %s\n' "$*" >&2; exit 1; }
 usage() {
   cat <<'HELP'
 Usage: bash scripts/jury.sh up [PORT] | status | logs | stop
-  up       Build without tests, migrate the separate demo DB and start (default port 18080)
+  up       Build the jury image, migrate the separate demo DB and start (default port 18080)
   status   Show the synapse-jury containers and current published address
   logs     Show recent backend/worker logs
   stop     Stop the jury environment; preserve the demo database
 Requires Docker with Compose v2.20+ and Bash (Linux, WSL, macOS).
 No domain, token, local Node/C++ installation or .env file is required.
+The jury image compiles only the application; frontend build still checks types.
+JURY_BUILD_JOBS controls C++ parallelism (default 2). With enough CPU/RAM:
+  JURY_BUILD_JOBS=4 bash scripts/jury.sh up
 HELP
 }
 command="${1:-up}"
@@ -24,6 +27,7 @@ case "$command" in
     (( $# <= 1 )) || die 'Usage: up [PORT]'
     port="${1:-18080}"
     [[ "$port" =~ ^[1-9][0-9]{0,4}$ ]] && (( port >= 1024 && port <= 65535 )) || die 'PORT must be 1024..65535.'
+    [[ "${JURY_BUILD_JOBS:-2}" =~ ^[1-9][0-9]*$ ]] || die 'JURY_BUILD_JOBS must be a positive integer.'
     ;;
   status|logs|stop) [[ $# == 0 ]] || die 'This command takes no arguments.'; port=18080 ;;
   *) usage; exit 2 ;;

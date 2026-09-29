@@ -15,7 +15,14 @@ int main(){try{
  auto response=response_for(*event,"test_bot");check(response.has_value(),"start response");
  check(response->body["attachments"][0]["payload"]["buttons"][0][0]["type"]=="open_app","open app button");
  check(response->body["attachments"][0]["payload"]["buttons"][0][0]["web_app"]=="test_bot","username");
- check(response_for(*event,"")->body["attachments"][0]["payload"]["buttons"].size()==6,"menu without unconfigured app button");
+ const auto menu=response_for(*event,"")->body["attachments"][0]["payload"]["buttons"];
+ check(menu.size()==7,"menu without unconfigured app button");
+ bool rules_button=false;
+ for(const auto& row:menu)for(const auto& button:row){
+  check(button.at("type")=="callback","unconfigured menu contains callbacks only");
+  if(button.at("payload")=="rules")rules_button=true;
+ }
+ check(rules_button,"community rules action in menu");
  update["update_type"]="bot_stopped";check(!response_for(*parse_update(update),"test"),"stop no response");
  update["update_type"]="dialog_removed";check(parse_update(update)->activity==false,"removed inactive");
  update["update_type"]="unknown";check(!parse_update(update),"unknown ignored");
@@ -27,7 +34,7 @@ int main(){try{
  check(parse_update(message)->activity==true,"explicit start establishes existing chat");
  message["message"]["recipient"]["chat_type"]="chat";check(!parse_update(message),"group ignored");
  message["message"]["recipient"]["chat_type"]="dialog";message["message"]["body"]["text"]="/starter";check(response_for(*parse_update(message),"").has_value(),"unknown command returns menu");
- for(const auto* command:{"ask","knowledge","stats","requests","cancel","back","resume"}){
+ for(const auto* command:{"ask","knowledge","stats","requests","cancel","back","resume","rules"}){
   message["message"]["body"]["text"]="/"+std::string(command);
   check(parse_update(message)->command==command,"product command parsed");
  }

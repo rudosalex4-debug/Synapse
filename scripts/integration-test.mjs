@@ -6,25 +6,35 @@ if (!['localhost','127.0.0.1','[::1]'].includes(base.hostname) || base.username 
 let checks=0;
 async function request(path,{method='GET',token,body,status=200,headers={}}={}) {
  const r=await fetch(new URL(path,base),{method,headers:{...(body!==undefined?{'Content-Type':'application/json'}:{}),...(token?{Authorization:'Bearer '+token}:{}),...headers},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(10000),redirect:'error'});
- assert.equal(r.status,status,path+' status');checks++;const data=await r.json();
+ const data=await r.json();assert.equal(r.status,status,method+' '+path+' status '+(data.error?.code??''));checks++;
  if(status>=400){assert.equal(typeof data.error?.code,'string');assert.equal(typeof data.error?.requestId,'string');}
  return {data,r};
 }
 const edit = p => ({displayName:p.displayName,bio:p.bio,availableToHelp:p.availableToHelp,maxActiveConversations:p.maxActiveConversations,competencies:p.competencies.map(({id,topicId,facets,experienceKind,description,evidenceVisibility,evidenceUrl})=>({id,topicId,facets,experienceKind,description,evidenceVisibility,...(evidenceUrl?{evidenceUrl}:{})}))});
 await request('/health/live');await request('/health/ready');
 const {data:bootstrap}=await request('/api/bootstrap');assert.equal(bootstrap.mode,'demo');
-const {data:catalog}=await request('/api/taxonomy');assert.ok(catalog.topics.filter(t=>t.level===1).length>=5);
+const {data:catalog}=await request('/api/taxonomy');
+for(const id of ['pathways','career'])assert.ok(catalog.topics.some(t=>t.id===id&&t.level===1&&t.active));
+assert.ok(catalog.topics.some(t=>t.id==='career.work'&&t.level>=2&&t.active));
 await request('/api/profile',{status:401});
 await request('/api/auth/demo',{method:'POST',body:{persona:'invented'},status:400});
 const {data:a}=await request('/api/auth/demo',{method:'POST',body:{persona:'anna'}});
 const {data:b}=await request('/api/auth/demo',{method:'POST',body:{persona:'boris'}});
 assert.notEqual(a.user.id,b.user.id);
+const {data:rules}=await request('/api/community-rules');
+assert.equal(typeof rules.version,'string');assert.ok(rules.version.length>0);
+for(const session of [a,b]) {
+ const {data:accepted}=await request('/api/community-rules/accept',{method:'POST',token:session.token,body:{version:rules.version}});
+ assert.equal(accepted.accepted,true);assert.equal(accepted.version,rules.version);
+ const {data:status}=await request('/api/community-rules/status',{token:session.token});
+ assert.equal(status.accepted,true);assert.equal(status.version,rules.version);
+}
 const {data:oldA,r:oldHeaders}=await request('/api/profile',{token:a.token});
 const {data:oldB}=await request('/api/profile',{token:b.token});
 assert.equal(oldHeaders.headers.get('etag'),'"'+oldA.revision+'"');
-let latest=oldA;
+let latest=oldA, failure;
 try {
- const body={...edit(oldA),bio:'integration-'+randomUUID(),competencies:[{topicId:'science.math',facets:{},experienceKind:'practice',description:'Объясняю проценты',evidenceVisibility:'private',evidenceUrl:'https://example.invalid/diploma'}]};
+ const body={...edit(oldA),bio:'integration-'+randomUUID(),competencies:[{topicId:'career.work',facets:{},experienceKind:'practice',description:'Делюсь опытом первых рабочих задач',evidenceVisibility:'private',evidenceUrl:'https://example.invalid/diploma'}]};
  await request('/api/profile',{method:'PUT',token:a.token,body,status:428});
  const saved=await request('/api/profile',{method:'PUT',token:a.token,body,headers:{'If-Match':'"'+oldA.revision+'"'}});
  latest=saved.data;
@@ -37,19 +47,27 @@ try {
  for(const invalid of [
   {...edit(latest),provenance:'verified'},
   {...edit(latest),competencies:[{...edit(latest).competencies[0],evidenceStatus:'verified'}]},
-  {...edit(latest),competencies:[{...edit(latest).competencies[0],topicId:'science'}]},
+  {...edit(latest),competencies:[{...edit(latest).competencies[0],topicId:'career'}]},
+  {...edit(latest),competencies:[{...edit(latest).competencies[0],topicId:'science.math'}]},
   {...edit(latest),competencies:[{...edit(latest).competencies[0],facets:{organization:['itmo']}}]},
   {...edit(latest),competencies:[{...edit(latest).competencies[0],evidenceUrl:'http://example.invalid/file'}]},
   {...edit(latest),bio:'я'.repeat(501)}
  ]) await request('/api/profile',{method:'PUT',token:a.token,body:invalid,headers:{'If-Match':'"'+latest.revision+'"'},status:400});
  const duplicate=await fetch(new URL('/api/auth/demo',base),{method:'POST',headers:{'Content-Type':'application/json'},body:'{"persona":"anna","persona":"boris"}'});assert.equal(duplicate.status,400);checks++;
  await request('/api/profile',{method:'PUT',token:a.token,body:{...edit(latest),competencies:[]},headers:{'If-Match':'"'+latest.revision+'"'},status:200}).then(result=>latest=result.data);
+} catch(error) {
+ failure=error;throw error;
 } finally {
  // Restore the original demo fields, preserving assigned competency IDs where possible.
  // Deleted demo competencies are recreated; a competing user's save is never overwritten.
- const restore=edit(oldA);restore.competencies=restore.competencies.map(({id,...skill})=>skill);
- const restored=await request('/api/profile',{method:'PUT',token:a.token,body:restore,headers:{'If-Match':'"'+latest.revision+'"'}});
- latest=restored.data;
+ if(latest.revision!==oldA.revision)try {
+  const restore=edit(oldA);restore.competencies=restore.competencies.map(({id,...skill})=>skill);
+  const restored=await request('/api/profile',{method:'PUT',token:a.token,body:restore,headers:{'If-Match':'"'+latest.revision+'"'}});
+  latest=restored.data;
+ } catch(error) {
+  if(failure)throw new AggregateError([failure,error],'Integration scenario failed and the demo profile could not be restored.');
+  throw error;
+ }
 }
 await request('/api/auth/logout',{method:'POST',token:a.token});
 await request('/api/profile',{token:a.token,status:401});
@@ -57,5 +75,5 @@ await request('/api/auth/logout',{method:'POST',token:b.token});
 await request('/webhooks/max',{method:'POST',body:{update_type:'unknown'},status:403});
 await request('/webhooks/max',{method:'POST',body:{update_type:'unknown'},headers:{'X-Max-Bot-Api-Secret':process.env.MAX_WEBHOOK_SECRET || 'local-webhook-test-only'}});
 if(!bootstrap.maxConfigured) await request('/api/auth/max',{method:'POST',body:{initData:'auth_date=1&user=x&hash=bad'},status:503});
-console.log('PASS '+checks+' HTTP integration scenarios: persistence, isolation, validation, revision conflicts, logout, webhook secret.');
-console.log('These checks change and restore the two local demo profiles; run on a disposable development database.');
+console.log('PASS '+checks+' HTTP integration scenarios: rules acceptance, persistence, isolation, validation, revision conflicts, logout, webhook secret.');
+console.log('These checks accept community rules for both demo users and change/restore Anna\'s profile; run on a disposable development database.');

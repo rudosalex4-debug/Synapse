@@ -12,32 +12,35 @@ int main(int argc, char** argv) {
             skills.push_back({std::move(id),std::move(user),std::move(topic),"practice",std::move(facets)});
             return skills.back();
         };
-        add("exact","u1","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}});
-        add("split-broad","split","digital.spreadsheets",{{"tool",{"excel"}}});
-        add("split-narrow","split","digital.spreadsheets.pivot_tables",{{"tool",{"google_sheets"}}});
-        add("self","author","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}});
-        add("busy","busy","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}}).load=2;
-        add("off","off","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}}).available=false;
-        add("blocked","blocked","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}});
-        add("other","other","science.math.percentages");
-        add("second","u1","digital.spreadsheets.pivot_tables",{{"tool",{"excel"}}});
+        add("exact","u1","career.internships.practice",{{"career_stage",{"intern"}}});
+        add("split-broad","split","career.internships",{{"career_stage",{"intern"}}});
+        add("split-narrow","split","career.internships.practice",{{"career_stage",{"junior"}}});
+        add("self","author","career.internships.practice",{{"career_stage",{"intern"}}});
+        add("busy","busy","career.internships.practice",{{"career_stage",{"intern"}}}).load=2;
+        add("off","off","career.internships.practice",{{"career_stage",{"intern"}}}).available=false;
+        add("blocked","blocked","career.internships.practice",{{"career_stage",{"intern"}}});
+        add("other","other","pathways.admissions.program_choice");
+        add("second","u1","career.internships.practice",{{"career_stage",{"intern"}}});
         MatchingIndex index(catalog, skills);
-        MatchQuery query; query.topic_id="digital.spreadsheets.pivot_tables"; query.author_id="author";
-        query.facets={{"tool",{"excel"}}}; query.required_facets={"tool"}; query.blocked_users={"blocked"};
+        MatchQuery query; query.topic_id="career.internships.practice"; query.author_id="author";
+        query.facets={{"career_stage",{"intern"}}}; query.required_facets={"career_stage"}; query.blocked_users={"blocked"};
         auto page=index.search(query);
         int checks=0;
         auto check=[&](bool ok,const char* msg){if(!ok)throw std::runtime_error(msg);++checks;};
         check(page.results.size()==1 && page.results[0].user_id=="u1","Eligibility, coherent competency, user deduplication");
         check(page.results[0].score==100 && !page.results[0].narrower,"Exact score and explanation");
         check(page.results[0].competency_id=="exact","Stable competency tie break");
-        query.topic_id="digital.spreadsheets";
+        query.topic_id="career.internships";
         page=index.search(query);
         check(page.results.size()==2 && page.results[0].user_id=="split","Exact broad topic ranks before narrower");
         check(page.results[1].narrower && page.results[1].score==90,"Narrower scope is explicit");
-        query.topic_id="languages.english";
+        query.topic_id="pathways.courses";
+        query.facets.clear(); query.required_facets.clear();
         check(index.search(query).results.empty(),"Unrelated branch produces no candidates");
-        query.topic_id="science";
+        query.topic_id="career";
         try { index.search(query); throw std::runtime_error("L1 accepted"); } catch(const std::invalid_argument&) { ++checks; }
+        query.topic_id="digital.spreadsheets.pivot_tables";
+        try { index.search(query); throw std::runtime_error("Archived topic accepted"); } catch(const std::invalid_argument&) { ++checks; }
         std::cout<<"PASS "<<checks<<" matching correctness checks\n";
         using Clock=std::chrono::steady_clock;
         for (const std::size_t count : {10000U,100000U}) {
@@ -46,12 +49,12 @@ int main(int argc, char** argv) {
                 for (std::size_t i=0;i<count;++i) {
                     const bool relevant=dense || i%100==0;
                     sample.push_back({std::to_string(i),"user-"+std::to_string(i),
-                        relevant?"digital.spreadsheets.pivot_tables":"science.math.percentages","practice",{}});
+                        relevant?"career.internships.practice":"pathways.admissions.program_choice","practice",{}});
                 }
                 const auto begin=Clock::now();
                 MatchingIndex measured(catalog,std::move(sample));
                 const auto built=Clock::now();
-                MatchQuery target;target.topic_id="digital.spreadsheets.pivot_tables";target.limit=20;
+                MatchQuery target;target.topic_id="career.internships.practice";target.limit=20;
                 const auto result=measured.search(target);
                 const auto end=Clock::now();
                 check(result.inspected_competencies==(dense?count:count/100),"Index must visit only relevant postings");

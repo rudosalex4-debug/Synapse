@@ -63,8 +63,10 @@ services:
     build:
       context: .
       dockerfile: infra/Dockerfile
+      target: jury
       args:
         RUN_TESTS: "false"
+        BUILD_JOBS: "${JURY_BUILD_JOBS:-2}"
     command: ["/app/bin/max-help", "serve"]
     ports:
       - "127.0.0.1:${JURY_PORT:-18080}:8080"
