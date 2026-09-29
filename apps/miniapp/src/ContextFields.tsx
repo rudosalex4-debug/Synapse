@@ -10,7 +10,7 @@ function ContextPicker({ facet, selected, open, onOpen, onChange, required, onRe
   const shown = matches.slice(0, 12);
   const selectedValues = facet.values.filter(value => selected.includes(value.id));
   return <div className={open ? 'context-picker is-open' : 'context-picker'}>
-    <button type="button" className="context-picker-toggle" aria-expanded={open} onClick={onOpen}><span><strong>{facet.label}</strong><small>{selectedValues.length ? selectedValues.map(value => value.label).join(' · ') : facet.placeholder ?? 'Не указано — выберите, если это важно'}</small></span><span className="context-picker-mark" aria-hidden="true">{open ? '−' : '+'}</span></button>
+    <button type="button" className="context-picker-toggle" aria-expanded={open} onClick={onOpen}><span><strong>{facet.label}</strong><small>{selectedValues.length ? selectedValues.map(value => value.label).join(' · ') : facet.placeholder ?? 'Не указано - выберите, если это важно'}</small></span><span className="context-picker-mark" aria-hidden="true">{open ? '−' : '+'}</span></button>
     {open && <div className="context-picker-body">
       {facet.help && <p className="field-hint">{facet.help}</p>}
       {!!selectedValues.length && <ul className="context-selected" aria-label={`Выбрано: ${facet.label}`}>{selectedValues.map(value => <li key={value.id}><button type="button" onClick={() => onChange(selected.filter(id => id !== value.id))} aria-label={`Убрать: ${value.label}`}>{value.label}<span aria-hidden="true">×</span></button></li>)}</ul>}
