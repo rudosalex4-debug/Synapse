@@ -1,6 +1,7 @@
 #include "jobs.hpp"
 #include "services.hpp"
 #include "notifications.hpp"
+#include "community_rules.hpp"
 
 #include <cstdint>
 #include <cstdlib>
@@ -47,6 +48,7 @@ public:
             db_.exec("DELETE FROM outbox WHERE max_user_id=$1", {user});
             db_.exec("DELETE FROM bot_inbox WHERE payload->>'user_id'=$1", {user});
             db_.exec("DELETE FROM max_dialogs WHERE max_user_id=$1", {user});
+            db_.exec("DELETE FROM users WHERE max_user_id=$1", {user});
             tx.commit();
         } catch (const std::exception&) {
             cleanup_failed = true;
@@ -151,16 +153,20 @@ public:
 class ProductFixture {
     Db& db_;
     const Config& config_;
-    std::string author_ = uuid(), helper_ = uuid();
+    std::string author_, helper_ = uuid();
     std::string topic_ = "queue-test-topic:" + uuid();
 public:
     ProductFixture(Db& db, const Config& config, const Fixture& dialog)
         : db_(db), config_(config) {
         Transaction tx(db_);
-        db_.exec("INSERT INTO users(id,max_user_id,display_name,provenance,product_notifications) "
-                 "VALUES($1::uuid,$2,'Queue author','self_declared',true),"
-                 "($3::uuid,$4,'Queue helper','self_declared',false)",
-                 {author_,dialog.user,helper_,"queue-helper:"+helper_});
+        const auto author=db_.exec("SELECT id FROM users WHERE max_user_id=$1", {dialog.user});
+        check(author.size()==1,"bot startup creates the notification recipient profile");
+        author_=author.get(0,"id");
+        db_.exec("UPDATE users SET product_notifications=true WHERE id=$1::uuid", {author_});
+        db_.exec("INSERT INTO users(id,max_user_id,display_name,provenance) "
+                 "VALUES($1::uuid,$2,'Queue helper','self_declared')", {helper_,"queue-helper:"+helper_});
+        accept_community_rules(db_,author_,{{"version",community_rules_version}});
+        accept_community_rules(db_,helper_,{{"version",community_rules_version}});
         db_.exec("INSERT INTO topics(id,level,label,taxonomy_version) VALUES($1,2,'Queue topic','queue-test')", {topic_});
         tx.commit();
     }

@@ -39,7 +39,7 @@ jobs:
         run: docker compose config --quiet
       - name: Build native backend and runtime image (includes CTest)
         run: docker compose build backend
-      - name: Isolated MAX auth, catalog readiness and five-domain profile integration
+      - name: Isolated MAX auth, community rules, catalog readiness and profile integration
         run: node scripts/auth-integration-test.mjs
       - name: Isolated request, matching, offer and conversation integration
         run: node scripts/workflow-integration-test.mjs

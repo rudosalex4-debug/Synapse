@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import { createHmac, randomBytes, randomUUID } from 'node:crypto';
 import { execFile } from 'node:child_process';
+import { readdir } from 'node:fs/promises';
 import { promisify } from 'node:util';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -101,10 +102,26 @@ async function selectTopic(who, message, topicId) {
   for (let i = 1; i <= pieces.length; i++) message = await click(who, choice(message, 'topic:' + pieces.slice(0, i).join('.')));
   return click(who, choice(message, 'topic_done'));
 }
-async function addKnowledge(who, topicId) {
+async function acceptRules(who) {
+  const message = await say(who, '/start');
+  const accept = buttons(message).find(b => b.payload?.startsWith('rules:accept:'));
+  check(Boolean(accept), 'New bot participant receives current community rules and explicit acceptance');
+  const blocked = await say(who, '/knowledge');
+  check(buttons(blocked).some(b => b.payload === accept.payload), 'Knowledge input requires explicit rules acceptance');
+  const accepted = await click(who, accept.payload);
+  check(accepted.text.includes('Правила сообщества приняты'), 'Bot records explicit rules acceptance');
+}
+async function selectContext(who, message, facetId, valueId) {
+  message = await click(who, choice(message, 'facet:' + facetId));
+  message = await click(who, choice(message, 'facet_value:' + valueId));
+  message = await click(who, choice(message, 'facet_done'));
+  return click(who, choice(message, 'context_done'));
+}
+async function addKnowledge(who, topicId, facetId, valueId) {
   let message = await say(who, '/knowledge');
   message = await selectTopic(who, message, topicId);
-  message = await say(who, 'I can explain this topic with simple educational examples.');
+  message = await selectContext(who, message, facetId, valueId);
+  message = await say(who, 'I can share my educational or career experience and explain the limits of it.');
   message = await click(who, choice(message, 'experience:practice'));
   message = await click(who, choice(message, 'available:yes'));
   const save = updateFor(who, choice(message, 'save'), true);
@@ -144,8 +161,8 @@ try {
   await compose(['up', '--no-build', '--wait', '--wait-timeout', '120'], 150000);
   await api(null, '/health/ready');
   const migrations = await rows('SELECT version FROM schema_migrations ORDER BY version');
-  check(migrations.length === 8 && migrations.some(r => r.version === '006_bot_forms.sql') &&
-    migrations.some(r => r.version === '007_product_notifications.sql'), 'All eight combined migrations are installed');
+  const expectedMigrations = (await readdir(path.join(root, 'db/migrations'))).filter(name => name.endsWith('.sql')).sort();
+  check(JSON.stringify(migrations.map(r => r.version)) === JSON.stringify(expectedMigrations), 'Every shipped migration is installed exactly once');
 
   // Readiness must fail if the bot form migration is missing from the ledger.
   const [ledger] = await rows("SELECT version,checksum,applied_at FROM schema_migrations WHERE version='006_bot_forms.sql'");
@@ -164,28 +181,36 @@ try {
   await api(null, '/webhooks/max', { method: 'POST', body: { update_type: 'unknown' }, status: 403 });
 
   const author = person('Cross channel author'), helper = person('Cross channel helper'), outsider = person('Cross channel outsider');
-  await say(author, '/start');
-  await say(helper, '/start');
-  await addKnowledge(author, 'languages.english.tenses');
-  await addKnowledge(helper, 'science.math.percentages');
+  await acceptRules(author);
+  await acceptRules(helper);
+  await addKnowledge(author, 'career.application.cv', 'company', 'yandex');
+  await addKnowledge(helper, 'pathways.admissions.program_choice', 'organization', 'itmo');
   const a = await login(author), h = await login(helper), o = await login(outsider);
+  const rules = await api(null, '/api/community-rules');
+  for (const actor of [a, h]) {
+    const status = await api(actor, '/api/community-rules/status');
+    check(status.accepted && status.version === rules.version && typeof status.acceptedAt === 'string', 'Bot acceptance is visible to the same MAX-authenticated mini user');
+  }
+  await post(o, '/api/community-rules/accept', { version: rules.version });
   const authorProfile = await api(a, '/api/profile'), helperProfile = await api(h, '/api/profile');
-  check(authorProfile.competencies.length === 1 && authorProfile.competencies[0].topicId === 'languages.english.tenses', 'Bot competence appears in the same MAX-authenticated mini profile exactly once');
-  check(helperProfile.competencies.length === 1 && helperProfile.competencies[0].topicId === 'science.math.percentages', 'Second bot participant has a distinct shared profile');
+  check(authorProfile.competencies.length === 1 && authorProfile.competencies[0].topicId === 'career.application.cv', 'Bot competence appears in the same MAX-authenticated mini profile exactly once');
+  check(helperProfile.competencies.length === 1 && helperProfile.competencies[0].topicId === 'pathways.admissions.program_choice', 'Second bot participant has a distinct shared profile');
+  check(authorProfile.competencies[0].facets.company?.[0] === 'yandex' && helperProfile.competencies[0].facets.organization?.[0] === 'itmo', 'Bot context selections persist in the shared mini profiles');
   check(authorProfile.id !== helperProfile.id && authorProfile.id === a.user.id, 'Cross-channel identity is one profile per verified MAX ID');
   const initialPreference = await api(a, '/api/notification-settings');
-  check(!initialPreference.enabled && initialPreference.botStarted && !initialPreference.deliveryAvailable, 'Notifications default off, bot startup is visible, and paused delivery is reported honestly');
+  check(!initialPreference.enabled && initialPreference.botStarted && initialPreference.deliveryAvailable, 'Notifications default off, bot startup is visible, and the configured notification channel is available');
   await api(a, '/api/notification-settings', { method: 'PUT', body: { enabled: true } });
   await api(h, '/api/notification-settings', { method: 'PUT', body: { enabled: true } });
 
   let message = await say(author, '/ask');
   const oldFormCancel = choice(message, 'cancel');
-  message = await say(author, 'Why are successive discounts not added?');
+  message = await say(author, 'How can I compare university degree programs?');
   message = await click(author, oldFormCancel);
   check(message.text.includes('Эта кнопка устарела'), 'Old form callback cannot cancel or change a later step');
-  message = await say(author, 'Please explain why applying ten percent and then twenty percent discount does not make a thirty percent discount.');
-  message = await selectTopic(author, message, 'science.math.percentages');
-  message = await click(author, choice(message, 'goal:understand'));
+  message = await say(author, 'I am comparing university degree programs and want to understand how to compare their curricula and practical experience opportunities.');
+  message = await selectTopic(author, message, 'pathways.admissions.program_choice');
+  message = await selectContext(author, message, 'organization', 'itmo');
+  message = await click(author, choice(message, 'goal:learning_path'));
   const saveRequest = updateFor(author, choice(message, 'save'), true);
   message = await deliver(saveRequest);
   const publishButton = buttons(message).find(b => b.payload?.startsWith('publish:'));
@@ -193,7 +218,8 @@ try {
   const originalPublish = publishButton.payload, requestId = originalPublish.split(':')[1];
   await deliver(saveRequest);
   let request = await api(a, '/api/requests/' + requestId);
-  check(request.status === 'draft' && request.authorId === a.user.id && request.topicId === 'science.math.percentages', 'Bot draft is owned by the same mini user');
+  check(request.status === 'draft' && request.authorId === a.user.id && request.topicId === 'pathways.admissions.program_choice', 'Bot draft is owned by the same mini user');
+  check(request.facets.organization?.[0] === 'itmo' && request.learningGoal === 'learning_path', 'Bot draft retains selected context and educational goal');
   check((await api(a, '/api/requests?scope=mine')).items.length === 1, 'Duplicate save webhook creates only one request');
   await api(o, '/api/requests/' + requestId, { status: 404 });
   const reach = await api(a, '/api/requests/' + requestId + '/reach');
@@ -202,7 +228,7 @@ try {
   await api(o, '/api/requests/' + requestId + '/reach', { status: [403, 404] });
 
   request = await api(a, '/api/requests/' + requestId, { method: 'PUT', revision: request.revision,
-    body: { ...editableRequest(request), attempt: 'I calculated 100 -> 90 -> 72 and want to understand why.' } });
+    body: { ...editableRequest(request), attempt: 'I compared the course lists and want to understand how much practical work each program includes.' } });
   message = await click(author, originalPublish);
   check(message.text.includes('Вопрос изменился'), 'Stale bot publication button detects a mini edit');
   check((await api(a, '/api/requests/' + requestId)).status === 'draft', 'Stale bot button cannot publish modified content');
@@ -218,8 +244,8 @@ try {
   check(!(await api(a, '/api/requests?scope=feed')).items.some(r => r.id === requestId), 'Author cannot be their own helper');
 
   const offerKey = randomUUID();
-  const offer = await post(h, '/api/requests/' + requestId + '/offers', { message: 'I can explain the remaining fractions.' }, { status: 201, key: offerKey });
-  await post(h, '/api/requests/' + requestId + '/offers', { message: 'I can explain the remaining fractions.' }, { status: 201, key: offerKey });
+  const offer = await post(h, '/api/requests/' + requestId + '/offers', { message: 'I can share my experience comparing course plans.' }, { status: 201, key: offerKey });
+  await post(h, '/api/requests/' + requestId + '/offers', { message: 'I can share my experience comparing course plans.' }, { status: 201, key: offerKey });
   check(await notificationCount(a, 'offer_received') === 1, 'Offer creates one opt-in bot notification even after API retry');
   check((await api(a, '/api/requests/' + requestId + '/offers')).items.length === 1, 'Author sees the mini offer once');
   const chat = await post(a, '/api/offers/' + offer.id + '/accept');
@@ -227,15 +253,15 @@ try {
   check(await notificationCount(h, 'helper_selected') === 1, 'Chosen helper receives a durable bot notification');
   await api(o, '/api/conversations/' + chat.id + '/messages', { status: 404 });
   const clientMessageId = randomUUID();
-  const sent = await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId, text: 'Why do we multiply the remaining fractions?' }, { status: 201 });
-  const resent = await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId, text: 'Why do we multiply the remaining fractions?' }, { status: 201 });
+  const sent = await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId, text: 'How do I compare the practical parts of these programs?' }, { status: 201 });
+  const resent = await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId, text: 'How do I compare the practical parts of these programs?' }, { status: 201 });
   check(sent.id === resent.id, 'Retry does not duplicate the private message');
-  await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId: randomUUID(), text: 'Can we start with a price of one hundred?' }, { status: 201 });
+  await post(a, '/api/conversations/' + chat.id + '/messages', { clientMessageId: randomUUID(), text: 'Can we start with the published course plans?' }, { status: 201 });
   check(await notificationCount(h, 'message_received') === 1, 'Nearby messages coalesce into one bot notification');
-  await post(h, '/api/conversations/' + chat.id + '/messages', { clientMessageId: randomUUID(), text: 'The second discount applies to ninety: 90 times 0.8 is 72.' }, { status: 201 });
+  await post(h, '/api/conversations/' + chat.id + '/messages', { clientMessageId: randomUUID(), text: 'Compare the project courses and practice requirements, then verify the details with each university.' }, { status: 201 });
   check((await api(a, '/api/conversations/' + chat.id + '/messages?after=0&limit=50')).items.length === 3, 'Both channels share the three persisted private messages');
-  const nextStep = 'Calculate a twenty-five percent discount followed by ten percent independently.';
-  const closed = await post(a, '/api/conversations/' + chat.id + '/close', { outcome: 'helpful', comment: 'I understand the changing base.', nextStep });
+  const nextStep = 'Compare the published course plans and ask each university about practice opportunities.';
+  const closed = await post(a, '/api/conversations/' + chat.id + '/close', { outcome: 'helpful', comment: 'I understand which parts of the programs to compare.', nextStep });
   check(closed.status === 'closed' && closed.nextStep === nextStep, 'Author closes the interaction with a persisted learning next step');
   check((await api(a, '/api/requests/' + requestId)).status === 'resolved', 'Successful mini conversation resolves the bot-created question');
   await post(h, '/api/conversations/' + chat.id + '/messages', { clientMessageId: randomUUID(), text: 'Late message.' }, { status: 409 });
@@ -250,7 +276,7 @@ try {
   check(pending === 0, 'Disabling notifications cancels this user pending product messages');
   check((await api(h, '/api/notification-settings')).enabled, 'Notification preference is isolated per user');
   check(Number(await sql('SELECT count(*) FROM outbox WHERE attempts<>0')) === 0, 'Worker processed bot forms without any external MAX delivery attempt');
-  console.log('PASS ' + checks + ' bot-mini assertions: eight migrations/readiness, synthetic webhook worker, shared identity/profile/draft, replay protection, stale publish, reach/matching, offers/private chat/outcome, bot statistics, notification opt-in/deduplication/cancellation.');
+  console.log('PASS ' + checks + ' bot-mini assertions: all shipped migrations/readiness, explicit rules acceptance, synthetic webhook worker, shared identity/profile/draft, replay protection, stale publish, reach/matching, offers/private chat/outcome, bot statistics, notification opt-in/deduplication/cancellation.');
 } finally {
   if (started) await compose(['down', '--volumes', '--remove-orphans', '--timeout', '10']);
 }

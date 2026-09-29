@@ -1,4 +1,5 @@
 #include "jobs.hpp"
+#include "community_rules.hpp"
 #include "services.hpp"
 #include <cstdlib>
 #include <iostream>
@@ -16,6 +17,10 @@ struct Fixture {
   auto event=Json{{"update_type","bot_started"},{"timestamp",clock},{"chat_id",-std::stoll(user)},
    {"user",{{"user_id",std::stoll(user)},{"is_bot",false},{"first_name","Проверка"}}}};
   accept_webhook(db,event);check(process_inbox(db,config),"start processed");
+  actor=db.exec("SELECT id FROM users WHERE max_user_id=$1",{user}).get(0,"id");
+  text("/knowledge");check(state().is_null(),"knowledge requires explicit rules acceptance");
+  callback(std::string("rules:accept:")+community_rules_version);
+  check(community_rules_status(db,actor).at("accepted").get<bool>(),"rules accepted through authenticated bot callback");
  }
  ~Fixture(){try{
   Transaction tx(db);
@@ -48,10 +53,14 @@ struct Fixture {
  Json state(){auto r=db.exec("SELECT state FROM bot_forms WHERE max_user_id=$1",{user});return r.size()?Json::parse(r.get(0,"state")):Json();}
  std::string action(const std::string& value){return "form:"+state().at("nonce").get<std::string>()+":"+value;}
  Json tap(const std::string& value){return callback(action(value));}
- void topic(){tap("topic:science");tap("topic:science.math");tap("topic_done");}
- void knowledge(){text("/knowledge");topic();text("Объясняю дроби и действия с ними");tap("experience:teaching");tap("available:yes");}
+ void topic(){
+  tap("topic:pathways");tap("topic:pathways.admissions");tap("topic_done");
+  check(state()["step"]=="context","topic selection opens context step");
+  tap("facet:organization");tap("facet_value:itmo");tap("facet_done");tap("context_done");
+ }
+ void knowledge(){text("/knowledge");topic();text("Делюсь опытом выбора университета и сравнения программ");tap("experience:teaching");tap("available:yes");}
  std::string request(){
-  text("/ask");text("Как складывать дроби?");text("Не понимаю, как привести дроби к общему знаменателю. Пробовал складывать числители.");topic();tap("goal:understand");tap("save");
+  text("/ask");text("Как выбрать программу в университете?");text("Не понимаю, как сравнить содержание программ и практику. Уже посмотрел учебные планы.");topic();tap("goal:learning_path");tap("save");
   return db.exec("SELECT id FROM help_requests WHERE author_id=(SELECT id FROM users WHERE max_user_id=$1) ORDER BY created_at DESC LIMIT 1",{user}).get(0,"id");
  }
 };
@@ -60,8 +69,8 @@ void run(Db& db,const Config& config){
  db.exec("DELETE FROM max_dialogs WHERE max_user_id=$1",{b.user});
  b.text("/start");
  check(db.exec("SELECT active FROM max_dialogs WHERE max_user_id=$1",{b.user}).get(0,"active")=="t","start activates chat opened before webhook setup");
- a.text("/knowledge");const auto old=a.action("topic:science");a.tap("topic:science");
- a.callback(old);check(a.state()["data"]["topicId"]=="science","stale button cannot advance form");
+ a.text("/knowledge");const auto old=a.action("topic:pathways");a.tap("topic:pathways");
+ a.callback(old);check(a.state()["data"]["topicId"]=="pathways","stale button cannot advance form");
  a.text("/cancel");check(a.state().is_null(),"cancel removes form");
  a.knowledge();
  auto actor=db.exec("SELECT id FROM users WHERE max_user_id=$1",{a.user}).get(0,"id");
@@ -73,12 +82,17 @@ void run(Db& db,const Config& config){
  auto profile=get_profile(db,actor);
  check(profile["competencies"].size()==1&&profile["bio"]=="Изменено в mini-app","knowledge shares profile and retains concurrent fields");
  check(profile["competencies"][0]["experienceKind"]=="teaching","experience preserved");
+ check(profile["competencies"][0]["topicId"]=="pathways.admissions"&&
+  profile["competencies"][0]["facets"]["organization"]==Json::array({"itmo"}),"knowledge retains active topic and selected context");
  a.knowledge();a.tap("save");check(get_profile(db,actor)["competencies"].size()==2,"adding knowledge retains existing competencies");
  a.text("/ask");a.text("Заголовок");auto invalid=a.text("коротко");
  check(a.state()["step"]=="body"&&invalid["text"].get<std::string>().find("30")!=std::string::npos,"validation keeps current form");
  {Db restarted(config.database_url);auto resume=a.update("/resume");accept_webhook(restarted,resume);check(process_inbox(restarted,config),"another worker resumes persisted form");}
  a.text("/cancel");auto request=a.request();
  check(db.exec("SELECT status FROM help_requests WHERE id=$1::uuid",{request}).get(0,"status")=="draft","bot saves private draft first");
+ auto draft=db.exec("SELECT topic_id,facets,learning_goal FROM help_requests WHERE id=$1::uuid",{request});
+ check(draft.get(0,"topic_id")=="pathways.admissions"&&draft.get(0,"learning_goal")=="learning_path"&&
+  Json::parse(draft.get(0,"facets"))["organization"]==Json::array({"itmo"}),"request retains active topic, context and educational goal");
  auto denied=b.callback("publish:"+request+":0");
  check(denied["text"].get<std::string>().find("недоступен")!=std::string::npos,"other user cannot publish draft");
  a.callback("publish:"+request+":0");
@@ -114,7 +128,7 @@ void run(Db& db,const Config& config){
  a.text("/cancel");
  a.text("/knowledge");
  db.exec("UPDATE bot_forms SET state=jsonb_set(state,'{data,topicId}','\"removed.topic\"'::jsonb) WHERE max_user_id=$1",{a.user});
- a.tap("topic:science");check(a.state()["data"]["topicId"]=="science","removed catalog topic can be reselected");
+ a.tap("topic:pathways");check(a.state()["data"]["topicId"]=="pathways","removed catalog topic can be reselected");
  auto stop=Json{{"update_type","bot_stopped"},{"timestamp",++a.clock},{"chat_id",-std::stoll(a.user)},
   {"user",{{"user_id",std::stoll(a.user)},{"is_bot",false}}}};
  accept_webhook(db,stop);check(a.state().is_null(),"stop removes unfinished form");

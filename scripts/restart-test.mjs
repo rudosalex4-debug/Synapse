@@ -20,6 +20,9 @@ const req=async(path,{status=200,...options}={})=>{const r=await fetch(base+path
 const ready=async()=>{for(let n=0;n<30;n++){try{await req('/health/ready');return}catch{}await new Promise(r=>setTimeout(r,500))}throw new Error('DB recovery timeout')};
 const session=await req('/api/auth/demo',{method:'POST',body:JSON.stringify({persona:'anna'})});
 const headers={Authorization:'Bearer '+session.token};
+const rules=await req('/api/community-rules');
+const accepted=await req('/api/community-rules/accept',{method:'POST',headers,body:JSON.stringify({version:rules.version})});
+assert.equal(accepted.accepted,true);assert.equal(accepted.version,rules.version);
 const original=await req('/api/profile',{headers});
 const edit=p=>({displayName:p.displayName,bio:p.bio,availableToHelp:p.availableToHelp,maxActiveConversations:p.maxActiveConversations,competencies:p.competencies.map(({id,topicId,facets,experienceKind,description,evidenceVisibility,evidenceUrl})=>({id,topicId,facets,experienceKind,description,evidenceVisibility,...(evidenceUrl?{evidenceUrl}:{})}))});
 const saved=await req('/api/profile',{method:'PUT',headers:{...headers,'If-Match':'"'+original.revision+'"'},body:JSON.stringify({...edit(original),bio:'Restart persistence check'})});

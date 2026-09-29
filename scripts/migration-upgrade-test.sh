@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Run in the WSL distribution that owns the project's Docker Engine:
-#   SYNAPSE_TEST_IMAGE=synapse:day23-check bash scripts/migration-upgrade-test.sh
+#   SYNAPSE_TEST_IMAGE=synapse:local bash scripts/migration-upgrade-test.sh
 # Only disposable, uniquely named resources are created. No .env, published
 # ports, project volumes, real credentials, worker, or MAX transport is used.
 set -Eeuo pipefail
 
-image="${SYNAPSE_TEST_IMAGE:-synapse:day23-check}"
+image="${SYNAPSE_TEST_IMAGE:-synapse:local}"
 postgres_image="postgres:17-bookworm"
 run_id="synapse-upgrade-$(date +%s)-$$-$RANDOM"
 network="${run_id}-net"
@@ -152,8 +152,9 @@ DO $$ BEGIN
   IF (SELECT array_agg(version ORDER BY version) FROM schema_migrations)
       IS DISTINCT FROM ARRAY['001_foundation.sql','002_resilience.sql','003_catalog_state.sql',
         '004_matching_index.sql','005_workflow.sql','006_bot_forms.sql',
-        '006_learning_outcome.sql','007_product_notifications.sql']::text[] THEN
-    RAISE EXCEPTION 'Expected exactly the eight integrated migrations';
+        '006_learning_outcome.sql','007_product_notifications.sql','008_matching_notifications.sql',
+        '009_moderation.sql','010_community_rules.sql']::text[] THEN
+    RAISE EXCEPTION 'Expected exactly the eleven integrated migrations';
   END IF;
   IF EXISTS (
     SELECT 1 FROM migration_upgrade_original_ledger old
@@ -172,14 +173,38 @@ DO $$ BEGIN
   IF to_regclass('public.bot_forms') IS NULL THEN
     RAISE EXCEPTION 'Bot form table missing after upgrade';
   END IF;
+  IF to_regclass('public.matching_notification_jobs') IS NULL
+      OR to_regclass('public.matching_notification_dispatches') IS NULL
+      OR to_regclass('public.matching_notification_refreshes') IS NULL THEN
+    RAISE EXCEPTION 'Matching notification tables missing after upgrade';
+  END IF;
+  IF to_regclass('public.moderation_audit') IS NULL THEN
+    RAISE EXCEPTION 'Moderation audit table missing after upgrade';
+  END IF;
+  IF EXISTS (
+    SELECT 1 FROM (VALUES
+      ('users','product_notifications_since'),('users','accepted_rules_version'),('users','rules_accepted_at'),
+      ('safety_reports','queue_id'),('safety_reports','revision'),('safety_reports','resolution'),
+      ('safety_reports','resolution_note'),('safety_reports','resolved_by'),('safety_reports','resolved_at'),
+      ('conversations','moderation_closed')
+    ) AS expected(table_name,column_name)
+    WHERE NOT EXISTS (
+      SELECT 1 FROM information_schema.columns actual
+      WHERE actual.table_schema='public' AND actual.table_name=expected.table_name
+        AND actual.column_name=expected.column_name
+    )
+  ) THEN
+    RAISE EXCEPTION 'Notification, moderation or community rules columns missing after upgrade';
+  END IF;
   IF NOT EXISTS (
     SELECT 1 FROM users WHERE id='11111111-1111-4111-8111-111111111111'::uuid
       AND max_user_id='900000000001' AND display_name='Upgrade marker'
       AND bio='Preserve this profile across upgrades' AND NOT available_to_help
       AND max_active_conversations=3 AND provenance='self_declared' AND revision=42
-      AND NOT product_notifications
+      AND NOT product_notifications AND product_notifications_since IS NULL
+      AND accepted_rules_version IS NULL AND rules_accepted_at IS NULL
   ) THEN
-    RAISE EXCEPTION 'Profile marker changed or notifications became enabled';
+    RAISE EXCEPTION 'Profile marker changed, notifications became enabled or rules were accepted implicitly';
   END IF;
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns

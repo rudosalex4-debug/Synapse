@@ -3,7 +3,7 @@
 // The isolated PostgreSQL volume is retained; no Docker volume is deleted here.
 import assert from 'node:assert/strict';
 import { scenarios } from './check-catalog-scenarios.mjs';
-import { createHash, createHmac } from 'node:crypto';
+import { createHash, createHmac, randomBytes } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -14,6 +14,7 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 const projectName = 'synapse-auth-test';
 const composeFile = 'compose.auth-test.yaml';
 const testBotToken = 'local-test-token-not-a-real-bot-token';
+const testImage = process.env.SYNAPSE_TEST_IMAGE || 'synapse:local';
 const api = new URL('http://127.0.0.1:8082');
 const demoApi = new URL('http://127.0.0.1:8083');
 const allowedOrigins = new Set([api.origin, demoApi.origin]);
@@ -107,6 +108,17 @@ async function login(origin, endpoint, body) {
   return session;
 }
 
+async function acceptRules(origin, token, rules) {
+  const accepted = await request(origin, '/api/community-rules/accept', {
+    method: 'POST', token, body: { version: rules.version },
+  });
+  check(accepted.accepted === true && accepted.version === rules.version &&
+    typeof accepted.acceptedAt === 'string', 'Current community rules are explicitly accepted');
+  const status = await request(origin, '/api/community-rules/status', { token });
+  check(status.accepted === true && status.version === rules.version && status.acceptedAt === accepted.acceptedAt,
+    'Community rules acceptance persists');
+}
+
 async function databaseJson(sql) {
   const result = await compose(['exec', '-T', 'db', 'psql', '-X', '-q', '-A', '-t',
     '-v', 'ON_ERROR_STOP=1', '-U', 'auth_test', '-d', 'synapse_auth_test', '-c', sql]);
@@ -122,7 +134,7 @@ async function verifyIsolation() {
   check(config.services.db.environment.POSTGRES_DB === 'synapse_auth_test', 'Dedicated PostgreSQL database');
   for (const service of ['api', 'demo-fixture', 'init']) {
     const environment = config.services[service].environment;
-    check(config.services[service].image === 'synapse:local', `${service}: uses the locally built image`);
+    check(config.services[service].image === testImage, `${service}: uses the selected locally built image`);
     check(environment.MAX_BOT_TOKEN === testBotToken, `${service}: synthetic token only`);
     check(environment.MAX_API_BASE_URL === 'https://example.invalid', `${service}: non-routable MAX API URL`);
     check(environment.DATABASE_URL === 'postgresql://auth_test:auth-test-only-password@db:5432/synapse_auth_test',
@@ -152,11 +164,32 @@ async function run() {
     await request(api, '/api/profile', { status: 401, code: 'UNAUTHORIZED' });
     await request(api, '/api/auth/demo', { method: 'POST', body: { persona: 'anna' }, status: 403, code: 'DEMO_DISABLED' });
 
+    const rules = await request(api, '/api/community-rules');
+    check(typeof rules.version === 'string' && rules.version.length > 0, 'Public community rules have a current version');
+    // The test volume survives reruns: use a fresh synthetic identity to exercise the initial gate.
+    const rulesUser = await login(api, '/api/auth/max', {
+      initData: signedInitData({ id: String(randomBytes(6).readUIntBE(0, 6) || 1) }),
+    });
+    const pendingRules = await request(api, '/api/community-rules/status', { token: rulesUser.token });
+    check(pendingRules.accepted === false && pendingRules.acceptedAt === null, 'New MAX user has not accepted community rules');
+    const pendingProfile = await request(api, '/api/profile', { token: rulesUser.token });
+    const profileWrite = { method: 'PUT', token: rulesUser.token, body: scenarios.scenarios[0].profile,
+      headers: { 'If-Match': '"' + pendingProfile.revision + '"' } };
+    await request(api, '/api/profile', { ...profileWrite, status: 403, code: 'RULES_ACCEPTANCE_REQUIRED' });
+    const unchangedProfile = await request(api, '/api/profile', { token: rulesUser.token });
+    check(JSON.stringify(unchangedProfile) === JSON.stringify(pendingProfile), 'Blocked profile write changes no data or revision');
+    await acceptRules(api, rulesUser.token, rules);
+    const allowedProfile = await request(api, '/api/profile', profileWrite);
+    check(allowedProfile.id === pendingProfile.id && allowedProfile.revision === pendingProfile.revision + 1,
+      'Explicit rules acceptance permits the previously blocked profile write');
+    console.log('PASS community rules gate profile writes until explicit acceptance.');
+
     const demo = await login(demoApi, '/api/auth/demo', { persona: 'anna' });
     check(demo.user.provenance === 'demo', 'Fixture API issued a real demo session');
     await request(demoApi, '/api/profile', { token: demo.token });
     await request(api, '/api/profile', { token: demo.token, status: 401, code: 'UNAUTHORIZED' });
     console.log('PASS production API rejects demo login and an existing demo session.');
+    await acceptRules(demoApi, demo.token, rules);
     let demoProfile = await request(demoApi, '/api/profile', { token: demo.token });
     for (const scenario of scenarios.scenarios) {
       const saved = await request(demoApi, '/api/profile', {
@@ -170,7 +203,7 @@ async function run() {
       check(loaded.competencies[0].evidenceStatus === 'none', 'Scenario without evidence claims no verification');
       demoProfile = saved;
     }
-    console.log('PASS profile save/read across all five catalog domains; synthetic scenarios only.');
+    console.log('PASS profile save/read for five participants across education and career; synthetic scenarios only.');
 
     const catalogState = await databaseJson('SELECT row_to_json(s)::text FROM catalog_state s WHERE singleton');
     check(catalogState.version === scenarios.catalogVersion && /^[a-f0-9]{64}$/.test(catalogState.checksum), 'Seed records catalog version and SHA-256');
