@@ -180,7 +180,7 @@ Json form_message(const Json& state,const Json& catalog,const std::string& prefi
   text+=context_summary(catalog,data);
   if(question){
    text+="\nЦель: "+label(goals,data.at("learningGoal").get<std::string>())+"\n\n"+data.at("title").get<std::string>()+"\n"+data.at("body").get<std::string>();
-   text+="\n\nСохраним приватный черновик. Публикация — отдельной кнопкой. Выбранный контекст улучшает подбор; обязательные условия и требования к опыту можно настроить в mini-app.";
+   text+="\n\nСохраним приватный черновик. Публикация - отдельной кнопкой. Выбранный контекст улучшает подбор; обязательные условия и требования к опыту можно настроить в mini-app.";
    row(rows,"Сохранить черновик",action+"save");
   }else{
    text+="\nОпыт: "+label(experiences,data.at("experienceKind").get<std::string>())+"\n"+data.at("description").get<std::string>();
@@ -202,7 +202,7 @@ Json statistics(Db& db,const std::string& actor,const std::string& username) {
  auto offers=db.exec("SELECT count(*) AS total,count(DISTINCT o.helper_id) AS helpers,"
   "count(*) FILTER(WHERE o.status='accepted') AS accepted FROM help_offers o JOIN help_requests r ON r.id=o.request_id WHERE r.author_id=$1::uuid",{actor});
  text+="\nОткликов за всё время: "+offers.get(0,"total")+"\nУникальных откликнувшихся: "+offers.get(0,"helpers")+
-  "\nВыбрано помощников: "+offers.get(0,"accepted")+"\nВ число откликов входят отозванные и отклонённые. Подробности — в «Мои вопросы и отклики».";
+  "\nВыбрано помощников: "+offers.get(0,"accepted")+"\nВ число откликов входят отозванные и отклонённые. Подробности - в «Мои вопросы и отклики».";
  return bot_message(text,bot_menu(username));
 }
 } // namespace
@@ -221,7 +221,7 @@ Outbound bot_workflow(Db& db,const Config& config,const BotEvent& event) {
  const bool accepted=community_rules_status(db,actor).at("accepted").get<bool>();
  if(event.payload.starts_with("rules:accept:")){
   const auto version=event.payload.substr(13);
-  if(version!=community_rules_version)return bot_reply(event,rules_message(config.bot_username,accepted,"Эта кнопка относится к прежней версии. Ниже — актуальные правила.\n\n"));
+  if(version!=community_rules_version)return bot_reply(event,rules_message(config.bot_username,accepted,"Эта кнопка относится к прежней версии. Ниже - актуальные правила.\n\n"));
   accept_community_rules(db,actor,{{"version",version}});
   enqueue_matching_profile(db,config,actor);
   return reply("Правила сообщества приняты. Выберите действие; /resume продолжит сохранённый ввод.");
@@ -246,7 +246,7 @@ Outbound bot_workflow(Db& db,const Config& config,const BotEvent& event) {
    {"after",event.payload.starts_with("requests:")?event.payload.substr(9):""}});
   Json buttons=Json::array();std::string text="Мои вопросы и отклики\n";
   for(const auto& item:page.at("items")){
-   text+="\n"+item.at("title").get<std::string>()+" — "+label(statuses,item.at("status").get<std::string>());
+   text+="\n"+item.at("title").get<std::string>()+" - "+label(statuses,item.at("status").get<std::string>());
    row(buttons,short_text(item.at("title").get<std::string>(),40),"request:"+item.at("id").get<std::string>());
   }
   if(page.at("items").empty())text+="Пока нет вопросов.";
