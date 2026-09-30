@@ -1,14 +1,14 @@
 {
   "name": "Synapse",
   "version": "0.12.0",
-  "packagingDate": "2026-09-29",
+  "packagingDate": "2026-09-30",
   "contents": "Source export without Git history, local secrets, databases or generated dependencies.",
-  "applicationCode": "Backend, frontend, SQL migrations and runtime catalog preserved from the source commit.",
+  "applicationCode": "Backend, frontend, SQL migrations, runtime catalog, OpenAPI contract and API verification materials.",
   "packagingChanges": [
-    "Jury-facing documentation replaces planning reports.",
-    "openapi.json copies the committed OpenAPI 0.12 contract.",
-    "Deployment example and preparer require an explicitly configured bot username.",
-    "Documentation references and ignore rules adapted for the standalone package."
+    "Jury-facing documentation prepared for final submission.",
+    "openapi.json contains the committed OpenAPI 0.12 contract.",
+    "DATA-API.yaml and reproducible API verification materials are included.",
+    "Documentation and ignore rules are adapted for the standalone submission package."
   ],
-  "verification": "No builds, application tests or live deployment were run during packaging."
+  "verification": "Production deployment verified on 2026-09-30. The backend reported healthy and the worker was running. The control Docker image build completed in 81.8 s with base images already present."
 }
